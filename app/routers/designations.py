@@ -9,6 +9,8 @@ from app.core.deps import get_tenant_id
 from app.models.designation import Designation
 from app.schemas.designation import DesignationCreate, DesignationUpdate, DesignationOut
 from app.schemas.common import PaginatedResponse, MessageResponse
+from app.core.audit import log_audit
+from fastapi import Request
 
 router = APIRouter(prefix="/designations", tags=["Designation Management"])
 
@@ -16,11 +18,15 @@ router = APIRouter(prefix="/designations", tags=["Designation Management"])
 @router.post("", response_model=DesignationOut, status_code=201)
 def create_designation(
     payload: DesignationCreate,
+    request: Request,
     db: Session = Depends(get_db),
     tenant_id: str = Depends(get_tenant_id),
 ):
+    user_role = request.headers.get("X-User-Role", "System")
     desig = Designation(**payload.model_dump(), tenant_id=tenant_id)
     db.add(desig)
+    db.flush()
+    log_audit(db, tenant_id, "designations", desig.id, "CREATE", user_role, payload.model_dump())
     db.commit()
     db.refresh(desig)
     return desig
@@ -81,9 +87,11 @@ def get_designation(
 def update_designation(
     desig_id: str,
     payload: DesignationUpdate,
+    request: Request,
     db: Session = Depends(get_db),
     tenant_id: str = Depends(get_tenant_id),
 ):
+    user_role = request.headers.get("X-User-Role", "System")
     desig = db.query(Designation).filter(
         Designation.id == desig_id,
         Designation.tenant_id == tenant_id,
@@ -93,6 +101,7 @@ def update_designation(
         raise HTTPException(status_code=404, detail="Designation not found")
     for field, value in payload.model_dump(exclude_none=True).items():
         setattr(desig, field, value)
+    log_audit(db, tenant_id, "designations", desig.id, "UPDATE", user_role, payload.model_dump(exclude_none=True))
     db.commit()
     db.refresh(desig)
     return desig
@@ -101,9 +110,11 @@ def update_designation(
 @router.delete("/{desig_id}", response_model=MessageResponse)
 def delete_designation(
     desig_id: str,
+    request: Request,
     db: Session = Depends(get_db),
     tenant_id: str = Depends(get_tenant_id),
 ):
+    user_role = request.headers.get("X-User-Role", "System")
     desig = db.query(Designation).filter(
         Designation.id == desig_id,
         Designation.tenant_id == tenant_id,
@@ -112,5 +123,6 @@ def delete_designation(
     if not desig:
         raise HTTPException(status_code=404, detail="Designation not found")
     desig.is_deleted = True
+    log_audit(db, tenant_id, "designations", desig.id, "DELETE", user_role, {"is_deleted": True})
     db.commit()
     return MessageResponse(message="Designation deleted successfully", id=desig_id)

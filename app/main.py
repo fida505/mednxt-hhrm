@@ -32,6 +32,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from app.core.middleware import RBACMiddleware
+app.add_middleware(RBACMiddleware)
+
 # Include Routers
 app.include_router(departments.router, prefix=settings.API_V1_STR)
 app.include_router(designations.router, prefix=settings.API_V1_STR)
@@ -40,6 +43,11 @@ app.include_router(seed.router, prefix=settings.API_V1_STR)
 
 # Serve Frontend Static Files
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
+# Serve Uploads
+if not os.path.exists("uploads"):
+    os.makedirs("uploads")
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.get("/")
 def read_root():

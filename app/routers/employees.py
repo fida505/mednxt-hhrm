@@ -9,6 +9,8 @@ from app.core.deps import get_tenant_id
 from app.models.employee import Employee
 from app.schemas.employee import EmployeeCreate, EmployeeUpdate, EmployeeOut
 from app.schemas.common import PaginatedResponse, MessageResponse
+from app.core.audit import log_audit
+from fastapi import Request
 import random
 
 router = APIRouter(prefix="/employees", tags=["Employee Management"])
@@ -27,12 +29,16 @@ def generate_employee_code(db: Session, tenant_id: str):
 @router.post("", response_model=EmployeeOut, status_code=201)
 def create_employee(
     payload: EmployeeCreate,
+    request: Request,
     db: Session = Depends(get_db),
     tenant_id: str = Depends(get_tenant_id),
 ):
+    user_role = request.headers.get("X-User-Role", "System")
     emp_code = generate_employee_code(db, tenant_id)
     emp = Employee(**payload.model_dump(), employee_code=emp_code, tenant_id=tenant_id)
     db.add(emp)
+    db.flush()
+    log_audit(db, tenant_id, "employees", emp.id, "CREATE", user_role, payload.model_dump())
     db.commit()
     db.refresh(emp)
     return emp
@@ -98,9 +104,11 @@ def get_employee(
 def update_employee(
     emp_id: str,
     payload: EmployeeUpdate,
+    request: Request,
     db: Session = Depends(get_db),
     tenant_id: str = Depends(get_tenant_id),
 ):
+    user_role = request.headers.get("X-User-Role", "System")
     emp = db.query(Employee).filter(
         Employee.id == emp_id,
         Employee.tenant_id == tenant_id,
@@ -110,6 +118,7 @@ def update_employee(
         raise HTTPException(status_code=404, detail="Employee not found")
     for field, value in payload.model_dump(exclude_none=True).items():
         setattr(emp, field, value)
+    log_audit(db, tenant_id, "employees", emp.id, "UPDATE", user_role, payload.model_dump(exclude_none=True))
     db.commit()
     db.refresh(emp)
     return emp
@@ -118,9 +127,11 @@ def update_employee(
 @router.delete("/{emp_id}", response_model=MessageResponse)
 def delete_employee(
     emp_id: str,
+    request: Request,
     db: Session = Depends(get_db),
     tenant_id: str = Depends(get_tenant_id),
 ):
+    user_role = request.headers.get("X-User-Role", "System")
     emp = db.query(Employee).filter(
         Employee.id == emp_id,
         Employee.tenant_id == tenant_id,
@@ -129,5 +140,83 @@ def delete_employee(
     if not emp:
         raise HTTPException(status_code=404, detail="Employee not found")
     emp.is_deleted = True
+    log_audit(db, tenant_id, "employees", emp.id, "DELETE", user_role, {"is_deleted": True})
     db.commit()
     return MessageResponse(message="Employee soft deleted successfully", id=emp_id)
+
+
+from fastapi import UploadFile, File
+from app.models.document import EmployeeDocument
+from app.schemas.document import DocumentOut
+import os
+import shutil
+
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@router.post("/{emp_id}/documents", response_model=DocumentOut, status_code=201)
+def upload_employee_document(
+    emp_id: str,
+    request: Request,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    tenant_id: str = Depends(get_tenant_id),
+):
+    user_role = request.headers.get("X-User-Role", "System")
+    
+    # Verify employee exists
+    emp = db.query(Employee).filter(
+        Employee.id == emp_id,
+        Employee.tenant_id == tenant_id,
+        Employee.is_deleted == False
+    ).first()
+    if not emp:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    # Generate safe unique filename
+    import uuid
+    ext = os.path.splitext(file.filename)[1]
+    safe_filename = f"{uuid.uuid4()}{ext}"
+    file_path = os.path.join(UPLOAD_DIR, safe_filename)
+
+    # Save file to disk
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    # Save to DB
+    doc = EmployeeDocument(
+        tenant_id=tenant_id,
+        employee_id=emp_id,
+        filename=file.filename,
+        file_path=file_path,
+        content_type=file.content_type
+    )
+    db.add(doc)
+    db.flush()
+    log_audit(db, tenant_id, "employee_documents", doc.id, "CREATE", user_role, {"filename": file.filename})
+    db.commit()
+    db.refresh(doc)
+    return doc
+
+
+@router.get("/{emp_id}/documents", response_model=list[DocumentOut])
+def list_employee_documents(
+    emp_id: str,
+    db: Session = Depends(get_db),
+    tenant_id: str = Depends(get_tenant_id),
+):
+    # Verify employee exists
+    emp = db.query(Employee).filter(
+        Employee.id == emp_id,
+        Employee.tenant_id == tenant_id,
+        Employee.is_deleted == False
+    ).first()
+    if not emp:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    docs = db.query(EmployeeDocument).filter(
+        EmployeeDocument.employee_id == emp_id,
+        EmployeeDocument.tenant_id == tenant_id,
+        EmployeeDocument.is_deleted == False
+    ).all()
+    return docs

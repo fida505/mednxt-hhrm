@@ -9,6 +9,8 @@ from app.core.deps import get_tenant_id
 from app.models.department import Department
 from app.schemas.department import DepartmentCreate, DepartmentUpdate, DepartmentOut
 from app.schemas.common import PaginatedResponse, MessageResponse
+from app.core.audit import log_audit
+from fastapi import Request
 
 router = APIRouter(prefix="/departments", tags=["Department Management"])
 
@@ -16,11 +18,15 @@ router = APIRouter(prefix="/departments", tags=["Department Management"])
 @router.post("", response_model=DepartmentOut, status_code=201)
 def create_department(
     payload: DepartmentCreate,
+    request: Request,
     db: Session = Depends(get_db),
     tenant_id: str = Depends(get_tenant_id),
 ):
+    user_role = request.headers.get("X-User-Role", "System")
     dept = Department(**payload.model_dump(), tenant_id=tenant_id)
     db.add(dept)
+    db.flush() # flush to get dept.id
+    log_audit(db, tenant_id, "departments", dept.id, "CREATE", user_role, payload.model_dump())
     db.commit()
     db.refresh(dept)
     return dept
@@ -78,9 +84,11 @@ def get_department(
 def update_department(
     dept_id: str,
     payload: DepartmentUpdate,
+    request: Request,
     db: Session = Depends(get_db),
     tenant_id: str = Depends(get_tenant_id),
 ):
+    user_role = request.headers.get("X-User-Role", "System")
     dept = db.query(Department).filter(
         Department.id == dept_id,
         Department.tenant_id == tenant_id,
@@ -90,6 +98,7 @@ def update_department(
         raise HTTPException(status_code=404, detail="Department not found")
     for field, value in payload.model_dump(exclude_none=True).items():
         setattr(dept, field, value)
+    log_audit(db, tenant_id, "departments", dept.id, "UPDATE", user_role, payload.model_dump(exclude_none=True))
     db.commit()
     db.refresh(dept)
     return dept
@@ -98,9 +107,11 @@ def update_department(
 @router.delete("/{dept_id}", response_model=MessageResponse)
 def delete_department(
     dept_id: str,
+    request: Request,
     db: Session = Depends(get_db),
     tenant_id: str = Depends(get_tenant_id),
 ):
+    user_role = request.headers.get("X-User-Role", "System")
     dept = db.query(Department).filter(
         Department.id == dept_id,
         Department.tenant_id == tenant_id,
@@ -109,5 +120,6 @@ def delete_department(
     if not dept:
         raise HTTPException(status_code=404, detail="Department not found")
     dept.is_deleted = True
+    log_audit(db, tenant_id, "departments", dept.id, "DELETE", user_role, {"is_deleted": True})
     db.commit()
     return MessageResponse(message="Department deleted successfully", id=dept_id)

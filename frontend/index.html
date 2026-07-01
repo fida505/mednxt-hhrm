@@ -434,7 +434,25 @@ function renderTable(mod,items){
     document.getElementById('table-body').innerHTML=tb;
 }
 
-function viewProfile(r){
+async function viewProfile(r){
+    document.getElementById('profileBody').innerHTML=`<div class="d-flex justify-content-center py-5"><div class="spinner-border text-primary"></div></div>`;
+    new bootstrap.Modal(document.getElementById('profileModal')).show();
+
+    // Fetch documents
+    let docsHtml = '';
+    try {
+        const dRes = await api(`/employees/${r.id}/documents`);
+        const docs = await dRes.json();
+        if(docs.length) {
+            docsHtml = docs.map(d => `<div class="d-flex justify-content-between align-items-center mb-2 p-2" style="background:rgba(255,255,255,.03); border-radius:8px;">
+                <div class="d-flex align-items-center gap-2"><i class="ph ph-file-text" style="color:#818cf8;"></i><span style="font-size:0.9rem;">${d.filename}</span></div>
+                <a href="/${d.file_path.replace('\\','/')}" target="_blank" class="btn-icon"><i class="ph ph-download-simple"></i></a>
+            </div>`).join('');
+        } else {
+            docsHtml = `<div style="color:var(--muted); font-size:0.85rem; text-align:center; padding:10px;">No documents uploaded.</div>`;
+        }
+    } catch(e) { docsHtml = '<div style="color:var(--danger); font-size:0.85rem;">Failed to load docs</div>'; }
+
     document.getElementById('profileBody').innerHTML=`
         <div class="d-flex align-items-center gap-4 mb-4">
             <div class="profile-avatar">${r.first_name[0]}${(r.last_name||'')[0]||''}</div>
@@ -442,12 +460,39 @@ function viewProfile(r){
             <div style="color:var(--muted);">${r.employee_code} · ${r.category||'—'}</div>
             <div class="mt-2">${sBadge(r.employment_status)}</div></div>
         </div>
-        <div class="row g-3">
+        <div class="row g-3 mb-4">
             ${pf('Email',r.email||'—')}${pf('Phone',r.phone||'—')}${pf('Gender',r.gender||'—')}
             ${pf('Blood Group',r.blood_group||'—')}${pf('Date of Birth',r.date_of_birth||'—')}${pf('Joining Date',r.joining_date||'—')}
             ${pf('Qualification',r.qualification||'—')}${pf('Specialty',r.specialty||'—')}${pf('Experience',r.experience_years?r.experience_years+' yrs':'—')}
-        </div>`;
-    new bootstrap.Modal(document.getElementById('profileModal')).show();
+        </div>
+        <hr class="section-divider">
+        <p class="section-title d-flex justify-content-between align-items-center">
+            <span>Documents</span>
+            <label class="btn btn-glass btn-sm mb-0" style="cursor:pointer;"><i class="ph ph-upload-simple me-1"></i>Upload<input type="file" hidden onchange="uploadDoc('${r.id}', this)"></label>
+        </p>
+        <div id="docList_${r.id}">${docsHtml}</div>
+    `;
+}
+async function uploadDoc(empId, input){
+    if(!input.files.length) return;
+    const file = input.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // Create new headers without Content-Type so browser sets boundary automatically
+    const fdHeaders = { 'X-Tenant-ID': TID };
+    const res = await fetch(API+\`/employees/\${empId}/documents\`, { method: 'POST', headers: fdHeaders, body: formData });
+    
+    if(res.ok) {
+        toast('Document uploaded successfully!');
+        // Refresh modal safely
+        bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
+        const rRes = await api(\`/employees/\${empId}\`);
+        const rData = await rRes.json();
+        viewProfile(rData);
+    } else {
+        toast('Failed to upload document!', false);
+    }
 }
 function pf(l,v){ return `<div class="col-md-4"><div class="profile-field"><div class="profile-field-label">${l}</div><div class="fw-medium">${v}</div></div></div>`; }
 
