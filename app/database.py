@@ -33,7 +33,7 @@ def init_db():
     from app.models import department, designation, employee, audit, document  # noqa
     Base.metadata.create_all(bind=engine)
 
-    # Automatic schema upgrade for existing SQLite DBs on Railway
+    # Automatic schema upgrade for existing DBs on Railway
     try:
         with engine.connect() as conn:
             # Check if file_size exists, if not, it will throw an exception
@@ -42,8 +42,12 @@ def init_db():
         # Column doesn't exist, alter the table
         try:
             with engine.connect() as conn:
-                conn.execute(text("ALTER TABLE employee_documents ADD COLUMN file_size BIGINT"))
-                conn.execute(text("ALTER TABLE employee_documents ADD COLUMN file_data BLOB"))
+                if engine.name == "postgresql":
+                    conn.execute(text("ALTER TABLE employee_documents ADD COLUMN file_size BIGINT"))
+                    conn.execute(text("ALTER TABLE employee_documents ADD COLUMN file_data BYTEA"))
+                else:
+                    conn.execute(text("ALTER TABLE employee_documents ADD COLUMN file_size BIGINT"))
+                    conn.execute(text("ALTER TABLE employee_documents ADD COLUMN file_data BLOB"))
                 conn.commit()
         except Exception as e:
             print(f"Schema update error: {e}")
