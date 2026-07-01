@@ -7,161 +7,96 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --bg: #0d0f1c;
-            --surface: rgba(20,23,40,0.9);
-            --card: rgba(26,30,50,0.85);
-            --primary: #6366f1;
-            --secondary: #a855f7;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --text: #f1f5f9;
-            --muted: #94a3b8;
-            --border: rgba(255,255,255,0.07);
+            --bg: #0d0f1c; --surface: rgba(20,23,40,0.9); --card: rgba(26,30,50,0.85);
+            --primary: #6366f1; --secondary: #a855f7; --success: #10b981;
+            --danger: #ef4444; --warning: #f59e0b;
+            --text: #f1f5f9; --muted: #94a3b8; --border: rgba(255,255,255,0.07);
             --blur: blur(14px);
         }
-        * { box-sizing: border-box; }
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Outfit', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-            background-image:
-                radial-gradient(ellipse at 0% 0%, rgba(99,102,241,0.13) 0, transparent 55%),
-                radial-gradient(ellipse at 100% 100%, rgba(168,85,247,0.13) 0, transparent 55%);
-            background-attachment: fixed;
-        }
-        /* ── Navbar ── */
-        .navbar {
-            background: var(--surface);
-            backdrop-filter: var(--blur);
-            border-bottom: 1px solid var(--border);
-            padding: .9rem 2rem;
-            position: sticky; top: 0; z-index: 100;
-        }
-        .brand { font-size: 1.4rem; font-weight: 700; color: #fff; display:flex; align-items:center; gap:10px; text-decoration:none; }
-        .brand-accent { background: linear-gradient(135deg,var(--primary),var(--secondary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-        .badge-phase { background: rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.3); color:#818cf8; font-size:.7rem; padding:3px 10px; border-radius:20px; font-weight:600; }
-        /* ── Sidebar ── */
-        .sidebar {
-            background: var(--surface);
-            backdrop-filter: var(--blur);
-            border-right: 1px solid var(--border);
-            min-height: calc(100vh - 58px);
-            padding: 1.5rem .8rem;
-            width: 220px; flex-shrink:0;
-        }
-        .sidebar-label { font-size:.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); font-weight:600; padding: 0 12px; margin-bottom:.8rem; }
-        .nav-item { margin-bottom:4px; }
-        .nav-link {
-            color: var(--muted); cursor:pointer; font-weight:500;
-            padding: 10px 16px; border-radius:10px;
-            transition: all .25s; display:flex; align-items:center; gap:10px; font-size:.95rem;
-        }
-        .nav-link:hover { color:#fff; background:rgba(255,255,255,0.05); transform:translateX(4px); }
-        .nav-link.active { color:#fff; background:linear-gradient(135deg,rgba(99,102,241,0.22),rgba(168,85,247,0.18)); border:1px solid rgba(99,102,241,0.28); }
-        /* ── Main ── */
+        * { box-sizing:border-box; }
+        body { background:var(--bg); color:var(--text); font-family:'Outfit',sans-serif; -webkit-font-smoothing:antialiased; min-height:100vh;
+            background-image: radial-gradient(ellipse at 0% 0%,rgba(99,102,241,.13) 0,transparent 55%), radial-gradient(ellipse at 100% 100%,rgba(168,85,247,.13) 0,transparent 55%);
+            background-attachment:fixed; }
+        .navbar { background:var(--surface); backdrop-filter:var(--blur); border-bottom:1px solid var(--border); padding:.9rem 2rem; position:sticky; top:0; z-index:100; }
+        .brand { font-size:1.4rem; font-weight:700; color:#fff; display:flex; align-items:center; gap:10px; text-decoration:none; }
+        .brand-accent { background:linear-gradient(135deg,var(--primary),var(--secondary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .badge-phase { background:rgba(99,102,241,.15); border:1px solid rgba(99,102,241,.3); color:#818cf8; font-size:.7rem; padding:3px 10px; border-radius:20px; font-weight:600; }
+        .sidebar { background:var(--surface); backdrop-filter:var(--blur); border-right:1px solid var(--border); min-height:calc(100vh - 58px); padding:1.5rem .8rem; width:220px; flex-shrink:0; }
+        .sidebar-label { font-size:.7rem; text-transform:uppercase; letter-spacing:1px; color:var(--muted); font-weight:600; padding:0 12px; margin-bottom:.8rem; }
+        .nav-link { color:var(--muted); cursor:pointer; font-weight:500; padding:10px 16px; border-radius:10px; transition:all .25s; display:flex; align-items:center; gap:10px; font-size:.95rem; margin-bottom:4px; }
+        .nav-link:hover { color:#fff; background:rgba(255,255,255,.05); transform:translateX(4px); }
+        .nav-link.active { color:#fff; background:linear-gradient(135deg,rgba(99,102,241,.22),rgba(168,85,247,.18)); border:1px solid rgba(99,102,241,.28); }
         .main-wrap { display:flex; }
         .main-content { flex:1; padding:2rem 2.5rem; overflow-x:hidden; }
-        /* ── Stats Cards ── */
-        .stat-card {
-            background: var(--card);
-            backdrop-filter: var(--blur);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.4rem 1.6rem;
-            display:flex; align-items:center; gap:1rem;
-            transition: all .3s;
-        }
+        .stat-card { background:var(--card); backdrop-filter:var(--blur); border:1px solid var(--border); border-radius:16px; padding:1.4rem 1.6rem; display:flex; align-items:center; gap:1rem; transition:all .3s; cursor:pointer; }
         .stat-card:hover { transform:translateY(-4px); box-shadow:0 12px 30px rgba(0,0,0,.35); }
         .stat-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; }
         .stat-value { font-size:2rem; font-weight:700; line-height:1; }
         .stat-label { font-size:.85rem; color:var(--muted); margin-top:2px; }
-        /* ── Glass Card ── */
-        .glass-card {
-            background: var(--card);
-            backdrop-filter: var(--blur);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 1.5rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,.25);
-            animation: fadeUp .4s ease;
-        }
+        .glass-card { background:var(--card); backdrop-filter:var(--blur); border:1px solid var(--border); border-radius:18px; padding:1.5rem; box-shadow:0 8px 24px rgba(0,0,0,.25); animation:fadeUp .4s ease; }
         @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-        /* ── Table ── */
         .table { color:var(--text); margin-bottom:0; }
         .table th { border-bottom:1px solid var(--border); color:var(--muted); font-weight:500; text-transform:uppercase; font-size:.75rem; letter-spacing:.8px; padding:14px 10px; }
-        .table td { border-bottom:1px solid rgba(255,255,255,0.03); padding:13px 10px; vertical-align:middle; }
-        .table tbody tr { transition:background .15s; }
-        .table tbody tr:hover { background:rgba(255,255,255,0.02); }
-        /* ── Badges ── */
-        .badge-active { background:rgba(16,185,129,0.12); color:#10b981; border:1px solid rgba(16,185,129,0.25); padding:5px 12px; border-radius:20px; font-size:.78rem; font-weight:600; }
-        .badge-inactive { background:rgba(239,68,68,0.12); color:#f87171; border:1px solid rgba(239,68,68,0.25); padding:5px 12px; border-radius:20px; font-size:.78rem; font-weight:600; }
-        .badge-grade { background:rgba(99,102,241,0.12); color:#818cf8; border:1px solid rgba(99,102,241,0.25); padding:5px 12px; border-radius:20px; font-size:.78rem; font-weight:600; }
-        /* ── Buttons ── */
-        .btn-primary-gradient {
-            background:linear-gradient(135deg,var(--primary),var(--secondary));
-            border:none; color:#fff; font-weight:600; border-radius:10px; padding:9px 22px;
-            box-shadow:0 4px 14px rgba(99,102,241,.38); transition:all .25s;
-        }
+        .table td { border-bottom:1px solid rgba(255,255,255,.03); padding:13px 10px; vertical-align:middle; }
+        .table tbody tr:hover { background:rgba(255,255,255,.02); }
+        .badge-active { background:rgba(16,185,129,.12); color:#10b981; border:1px solid rgba(16,185,129,.25); padding:4px 12px; border-radius:20px; font-size:.78rem; font-weight:600; cursor:pointer; transition:all .2s; }
+        .badge-inactive { background:rgba(239,68,68,.12); color:#f87171; border:1px solid rgba(239,68,68,.25); padding:4px 12px; border-radius:20px; font-size:.78rem; font-weight:600; cursor:pointer; transition:all .2s; }
+        .badge-grade { background:rgba(99,102,241,.12); color:#818cf8; border:1px solid rgba(99,102,241,.25); padding:4px 12px; border-radius:20px; font-size:.78rem; font-weight:600; }
+        .btn-primary-gradient { background:linear-gradient(135deg,var(--primary),var(--secondary)); border:none; color:#fff; font-weight:600; border-radius:10px; padding:9px 22px; box-shadow:0 4px 14px rgba(99,102,241,.38); transition:all .25s; }
         .btn-primary-gradient:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(99,102,241,.55); color:#fff; }
-        .btn-glass { background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text); border-radius:9px; padding:7px 14px; transition:all .2s; }
-        .btn-glass:hover { background:rgba(255,255,255,0.1); color:#fff; }
-        .btn-icon { background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:5px 10px; transition:all .2s; }
-        .btn-icon:hover { color:#fff; background:rgba(255,255,255,0.1); }
+        .btn-glass { background:rgba(255,255,255,.05); border:1px solid var(--border); color:var(--text); border-radius:9px; padding:7px 14px; transition:all .2s; }
+        .btn-glass:hover { background:rgba(255,255,255,.1); color:#fff; }
+        .btn-icon { background:rgba(255,255,255,.05); border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:5px 10px; transition:all .2s; }
+        .btn-icon:hover { color:#fff; background:rgba(255,255,255,.1); }
         .btn-icon.danger:hover { color:var(--danger); border-color:rgba(239,68,68,.3); background:rgba(239,68,68,.1); }
-        /* ── Search/Filter ── */
-        .search-bar { background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:9px 14px; transition:all .2s; width:260px; }
-        .search-bar:focus { outline:none; border-color:var(--primary); background:rgba(255,255,255,0.07); box-shadow:0 0 0 3px rgba(99,102,241,.18); color:#fff; }
+        .btn-seed { background:linear-gradient(135deg,#10b981,#059669); border:none; color:#fff; font-weight:600; border-radius:10px; padding:9px 22px; transition:all .25s; }
+        .btn-seed:hover { transform:translateY(-2px); color:#fff; }
+        .search-bar { background:rgba(255,255,255,.05); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:9px 14px; transition:all .2s; width:240px; }
+        .search-bar:focus { outline:none; border-color:var(--primary); background:rgba(255,255,255,.07); color:#fff; box-shadow:0 0 0 3px rgba(99,102,241,.18); }
         .search-bar::placeholder { color:#475569; }
-        .filter-select { background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:9px 14px; }
-        .filter-select:focus { outline:none; border-color:var(--primary); background:rgba(255,255,255,0.07); color:#fff; box-shadow:0 0 0 3px rgba(99,102,241,.18); }
-        .filter-select option { background:#1a1e32; }
-        /* ── Avatar ── */
+        .filter-select { background:rgba(255,255,255,.05); border:1px solid var(--border); color:var(--text); border-radius:10px; padding:9px 14px; }
+        .filter-select:focus { outline:none; border-color:var(--primary); background:rgba(255,255,255,.07); color:#fff; box-shadow:0 0 0 3px rgba(99,102,241,.18); }
+        .filter-select option { background:#131728; }
         .avatar { width:40px; height:40px; border-radius:12px; background:rgba(99,102,241,.18); color:#818cf8; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:.9rem; flex-shrink:0; }
-        /* ── Pagination ── */
         .page-btn { background:rgba(255,255,255,.05); border:1px solid var(--border); color:var(--muted); border-radius:8px; padding:5px 14px; transition:all .2s; cursor:pointer; }
-        .page-btn:hover, .page-btn.active { background:rgba(99,102,241,.2); border-color:rgba(99,102,241,.4); color:#fff; }
+        .page-btn:hover,.page-btn.active { background:rgba(99,102,241,.2); border-color:rgba(99,102,241,.4); color:#fff; }
         .page-btn:disabled { opacity:.4; cursor:not-allowed; }
-        /* ── Modals ── */
         .modal-content { background:#131728; border:1px solid var(--border); border-radius:18px; }
         .modal-header { border-bottom:1px solid var(--border); padding:1.3rem 1.8rem; }
         .modal-body { padding:1.5rem 1.8rem; }
         .modal-footer { border-top:1px solid var(--border); padding:1rem 1.8rem; }
         .form-label { color:var(--muted); font-size:.87rem; font-weight:500; margin-bottom:5px; }
-        .form-control, .form-select {
-            background:rgba(255,255,255,0.05); border:1px solid var(--border); color:#fff;
-            border-radius:10px; padding:9px 13px; transition:all .2s;
-        }
-        .form-control:focus, .form-select:focus { background:rgba(255,255,255,0.08); border-color:var(--primary); color:#fff; box-shadow:0 0 0 3px rgba(99,102,241,.18); }
+        .form-control,.form-select { background:rgba(255,255,255,.05); border:1px solid var(--border); color:#fff; border-radius:10px; padding:9px 13px; transition:all .2s; }
+        .form-control:focus,.form-select:focus { background:rgba(255,255,255,.08); border-color:var(--primary); color:#fff; box-shadow:0 0 0 3px rgba(99,102,241,.18); }
         .form-control::placeholder { color:#475569; }
         .form-select option { background:#131728; }
         .section-divider { border:none; border-top:1px solid var(--border); margin:1.2rem 0; }
         .section-title { font-size:.78rem; text-transform:uppercase; letter-spacing:.8px; color:var(--muted); font-weight:600; margin-bottom:1rem; }
-        /* ── Profile Panel ── */
-        .profile-panel { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:1.5rem; animation:fadeUp .3s ease; }
         .profile-avatar { width:72px; height:72px; border-radius:18px; background:rgba(99,102,241,.2); color:#818cf8; display:flex; align-items:center; justify-content:center; font-size:1.8rem; font-weight:700; }
         .profile-field { margin-bottom:.9rem; }
         .profile-field-label { font-size:.78rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:2px; }
-        .profile-field-value { font-weight:500; }
-        /* ── Empty State ── */
         .empty-state { text-align:center; padding:4rem 2rem; }
         .empty-state i { font-size:3.5rem; color:var(--muted); opacity:.35; display:block; margin-bottom:1rem; }
-        /* ── Toast ── */
         .toast-container { z-index:9999; }
-        .toast { background:#1a1e32; border:1px solid var(--border); border-radius:12px; min-width:260px; }
-        /* Scrollbar */
+        .toast { background:#1a1e32; border:1px solid var(--border); border-radius:12px; min-width:280px; }
+        .chart-card { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:1.5rem; }
         ::-webkit-scrollbar { width:6px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:#2d3554; border-radius:3px; }
+
+        @media print {
+            .navbar,.sidebar,.modal-footer,.btn-icon,.btn-glass,.btn-primary-gradient,.btn-seed { display:none !important; }
+            .main-content { padding:0 !important; }
+            .glass-card { box-shadow:none !important; border:1px solid #ccc !important; }
+        }
     </style>
 </head>
 <body>
 
 <!-- Toast -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
-    <div id="appToast" class="toast align-items-center text-white border-0" role="alert">
+    <div id="appToast" class="toast align-items-center text-white border-0">
         <div class="d-flex">
             <div class="toast-body fw-medium d-flex align-items-center gap-2" id="toastMsg"></div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
@@ -172,547 +107,427 @@
 <!-- Navbar -->
 <nav class="navbar">
     <div class="container-fluid d-flex align-items-center justify-content-between">
-        <a class="brand" href="#">
-            <i class="ph-fill ph-hospital" style="color:#818cf8;"></i>
-            MedNXT <span class="brand-accent">HHRM</span>
-            <span class="badge-phase">Phase 1</span>
-        </a>
+        <a class="brand" href="#"><i class="ph-fill ph-hospital" style="color:#818cf8;"></i>MedNXT <span class="brand-accent">HHRM</span><span class="badge-phase">Phase 1</span></a>
         <div class="d-flex align-items-center gap-3">
-            <div style="font-size:.85rem; color:var(--muted);" class="d-flex align-items-center gap-2">
-                <i class="ph ph-buildings"></i> Default Hospital
-            </div>
-            <a href="/docs" class="btn btn-glass d-flex align-items-center gap-2" style="font-size:.88rem;">
-                <i class="ph ph-code"></i> API Docs
-            </a>
+            <div style="font-size:.85rem;color:var(--muted);" class="d-flex align-items-center gap-2"><i class="ph ph-buildings"></i>Default Hospital</div>
+            <button class="btn btn-seed d-flex align-items-center gap-2" onclick="seedData()" style="font-size:.85rem; padding:7px 16px;">
+                <i class="ph ph-plant"></i> Load Demo Data
+            </button>
+            <a href="/docs" class="btn btn-glass d-flex align-items-center gap-2" style="font-size:.88rem;"><i class="ph ph-code"></i>API Docs</a>
         </div>
     </div>
 </nav>
 
 <div class="main-wrap">
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-label">HR Modules</div>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link active" id="nav-dashboard" onclick="showDashboard()"><i class="ph ph-squares-four fs-5"></i> Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" id="nav-departments" onclick="loadModule('departments')"><i class="ph ph-buildings fs-5"></i> Departments</a></li>
-            <li class="nav-item"><a class="nav-link" id="nav-designations" onclick="loadModule('designations')"><i class="ph ph-tag fs-5"></i> Designations</a></li>
-            <li class="nav-item"><a class="nav-link" id="nav-employees" onclick="loadModule('employees')"><i class="ph ph-users fs-5"></i> Employees</a></li>
+            <li><a class="nav-link active" id="nav-dashboard" onclick="showDashboard()"><i class="ph ph-squares-four fs-5"></i>Dashboard</a></li>
+            <li><a class="nav-link" id="nav-departments" onclick="loadModule('departments')"><i class="ph ph-buildings fs-5"></i>Departments</a></li>
+            <li><a class="nav-link" id="nav-designations" onclick="loadModule('designations')"><i class="ph ph-tag fs-5"></i>Designations</a></li>
+            <li><a class="nav-link" id="nav-employees" onclick="loadModule('employees')"><i class="ph ph-users fs-5"></i>Employees</a></li>
         </ul>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content" id="main-content">
-        <!-- Dashboard by default -->
-    </div>
+    <div class="main-content" id="main-content"></div>
 </div>
 
-<!-- DEPARTMENT MODAL -->
-<div class="modal fade" id="deptModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="deptModalTitle"><i class="ph ph-buildings me-2" style="color:#818cf8;"></i>Department</h5>
-                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="deptId">
-                <div class="mb-3"><label class="form-label">Department Name *</label><input type="text" class="form-control" id="deptName" placeholder="e.g. Cardiology OPD"></div>
-                <div class="row">
-                    <div class="col-6 mb-3"><label class="form-label">Code</label><input type="text" class="form-control" id="deptCode" placeholder="e.g. CARD"></div>
-                    <div class="col-6 mb-3"><label class="form-label">Cost Center</label><input type="text" class="form-control" id="deptCostCenter" placeholder="e.g. CC-001"></div>
-                </div>
-                <div class="mb-3"><label class="form-label">Description</label><textarea class="form-control" id="deptDesc" rows="2" placeholder="Brief description..."></textarea></div>
-                <div class="mb-3"><label class="form-label">Status</label>
-                    <select class="form-select" id="deptStatus"><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary-gradient" onclick="saveDept()">Save Department</button>
-            </div>
-        </div>
+<!-- DEPT MODAL -->
+<div class="modal fade" id="deptModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title fw-bold" id="deptModalTitle"></h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+        <input type="hidden" id="deptId">
+        <div class="mb-3"><label class="form-label">Department Name *</label><input class="form-control" id="deptName" placeholder="e.g. Cardiology OPD"></div>
+        <div class="row"><div class="col-6 mb-3"><label class="form-label">Code</label><input class="form-control" id="deptCode" placeholder="e.g. CARD"></div>
+        <div class="col-6 mb-3"><label class="form-label">Cost Center</label><input class="form-control" id="deptCostCenter" placeholder="e.g. CC-001"></div></div>
+        <div class="mb-3"><label class="form-label">Description</label><textarea class="form-control" id="deptDesc" rows="2"></textarea></div>
+        <div class="mb-3"><label class="form-label">Status</label><select class="form-select" id="deptStatus"><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select></div>
     </div>
-</div>
+    <div class="modal-footer"><button class="btn btn-glass" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary-gradient" onclick="saveDept()">Save Department</button></div>
+</div></div></div>
 
-<!-- DESIGNATION MODAL -->
-<div class="modal fade" id="desigModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="desigModalTitle"><i class="ph ph-tag me-2" style="color:#818cf8;"></i>Designation</h5>
-                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="desigId">
-                <div class="mb-3"><label class="form-label">Designation Title *</label><input type="text" class="form-control" id="desigName" placeholder="e.g. Senior Consultant"></div>
-                <div class="row">
-                    <div class="col-6 mb-3"><label class="form-label">Code</label><input type="text" class="form-control" id="desigCode" placeholder="e.g. SC-01"></div>
-                    <div class="col-6 mb-3"><label class="form-label">Grade</label>
-                        <select class="form-select" id="desigGrade"><option value="">-- Select --</option><option>Grade A</option><option>Grade B</option><option>Grade C</option><option>Grade D</option></select>
-                    </div>
-                </div>
-                <div class="mb-3"><label class="form-label">Description</label><textarea class="form-control" id="desigDesc" rows="2"></textarea></div>
-                <div class="mb-3"><label class="form-label">Status</label>
-                    <select class="form-select" id="desigStatus"><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary-gradient" onclick="saveDesig()">Save Designation</button>
-            </div>
-        </div>
+<!-- DESIG MODAL -->
+<div class="modal fade" id="desigModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title fw-bold" id="desigModalTitle"></h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+        <input type="hidden" id="desigId">
+        <div class="mb-3"><label class="form-label">Designation Title *</label><input class="form-control" id="desigName" placeholder="e.g. Senior Consultant"></div>
+        <div class="row"><div class="col-6 mb-3"><label class="form-label">Code</label><input class="form-control" id="desigCode"></div>
+        <div class="col-6 mb-3"><label class="form-label">Grade</label><select class="form-select" id="desigGrade"><option value="">-- Select --</option><option>Grade A</option><option>Grade B</option><option>Grade C</option><option>Grade D</option></select></div></div>
+        <div class="mb-3"><label class="form-label">Description</label><textarea class="form-control" id="desigDesc" rows="2"></textarea></div>
+        <div class="mb-3"><label class="form-label">Status</label><select class="form-select" id="desigStatus"><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select></div>
     </div>
-</div>
+    <div class="modal-footer"><button class="btn btn-glass" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary-gradient" onclick="saveDesig()">Save Designation</button></div>
+</div></div></div>
 
-<!-- EMPLOYEE MODAL -->
-<div class="modal fade" id="empModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="empModalTitle"><i class="ph ph-user-plus me-2" style="color:#818cf8;"></i>Employee</h5>
-                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="empId">
-                <p class="section-title">Personal Information</p>
-                <div class="row">
-                    <div class="col-md-6 mb-3"><label class="form-label">First Name *</label><input type="text" class="form-control" id="empFirstName" placeholder="First name"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label">Last Name</label><input type="text" class="form-control" id="empLastName" placeholder="Last name"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label">Email</label><input type="email" class="form-control" id="empEmail" placeholder="email@hospital.com"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label">Phone</label><input type="text" class="form-control" id="empPhone" placeholder="+91 XXXXXXXXXX"></div>
-                    <div class="col-md-4 mb-3"><label class="form-label">Gender</label>
-                        <select class="form-select" id="empGender"><option value="">Select</option><option>MALE</option><option>FEMALE</option><option>OTHER</option></select>
-                    </div>
-                    <div class="col-md-4 mb-3"><label class="form-label">Blood Group</label>
-                        <select class="form-select" id="empBlood"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select>
-                    </div>
-                    <div class="col-md-4 mb-3"><label class="form-label">Date of Birth</label><input type="date" class="form-control" id="empDob"></div>
-                </div>
-                <hr class="section-divider">
-                <p class="section-title">Employment Information</p>
-                <div class="row">
-                    <div class="col-md-6 mb-3"><label class="form-label">Department</label>
-                        <select class="form-select" id="empDept"><option value="">-- Select Department --</option></select>
-                    </div>
-                    <div class="col-md-6 mb-3"><label class="form-label">Designation</label>
-                        <select class="form-select" id="empDesig"><option value="">-- Select Designation --</option></select>
-                    </div>
-                    <div class="col-md-6 mb-3"><label class="form-label">Category</label>
-                        <select class="form-select" id="empCategory">
-                            <option value="">Select</option><option>DOCTOR</option><option>NURSE</option><option>PHARMACIST</option>
-                            <option>LAB_STAFF</option><option>RADIOLOGY_STAFF</option><option>RECEPTIONIST</option>
-                            <option>HR_STAFF</option><option>FINANCE_STAFF</option><option>HOUSEKEEPING</option>
-                            <option>SECURITY</option><option>IT_STAFF</option><option>BIOMEDICAL_ENGINEER</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3"><label class="form-label">Joining Date</label><input type="date" class="form-control" id="empJoining"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label">Qualification</label><input type="text" class="form-control" id="empQual" placeholder="e.g. MBBS, MD, MS"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label">Specialty</label><input type="text" class="form-control" id="empSpec" placeholder="e.g. Cardiology"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label">Experience (Years)</label><input type="text" class="form-control" id="empExp" placeholder="e.g. 5"></div>
-                    <div class="col-md-6 mb-3"><label class="form-label">Status</label>
-                        <select class="form-select" id="empStatus"><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option><option value="RESIGNED">Resigned</option></select>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
-                <button class="btn btn-primary-gradient" onclick="saveEmp()">Save Employee</button>
-            </div>
+<!-- EMP MODAL -->
+<div class="modal fade" id="empModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title fw-bold" id="empModalTitle"></h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+        <input type="hidden" id="empId">
+        <p class="section-title">Personal Information</p>
+        <div class="row">
+            <div class="col-md-6 mb-3"><label class="form-label">First Name *</label><input class="form-control" id="empFirstName" placeholder="First name"></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Last Name</label><input class="form-control" id="empLastName" placeholder="Last name"></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Email</label><input type="email" class="form-control" id="empEmail" placeholder="email@hospital.com"></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Phone</label><input class="form-control" id="empPhone" placeholder="+91 XXXXXXXXXX"></div>
+            <div class="col-md-4 mb-3"><label class="form-label">Gender</label><select class="form-select" id="empGender"><option value="">Select</option><option>MALE</option><option>FEMALE</option><option>OTHER</option></select></div>
+            <div class="col-md-4 mb-3"><label class="form-label">Blood Group</label><select class="form-select" id="empBlood"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option></select></div>
+            <div class="col-md-4 mb-3"><label class="form-label">Date of Birth</label><input type="date" class="form-control" id="empDob"></div>
+        </div>
+        <hr class="section-divider">
+        <p class="section-title">Employment Information</p>
+        <div class="row">
+            <div class="col-md-6 mb-3"><label class="form-label">Department</label><select class="form-select" id="empDept"><option value="">-- Select --</option></select></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Designation</label><select class="form-select" id="empDesig"><option value="">-- Select --</option></select></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Category</label><select class="form-select" id="empCategory"><option value="">Select</option><option>DOCTOR</option><option>NURSE</option><option>PHARMACIST</option><option>LAB_STAFF</option><option>RADIOLOGY_STAFF</option><option>RECEPTIONIST</option><option>HR_STAFF</option><option>FINANCE_STAFF</option><option>HOUSEKEEPING</option><option>SECURITY</option><option>IT_STAFF</option><option>BIOMEDICAL_ENGINEER</option></select></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Joining Date</label><input type="date" class="form-control" id="empJoining"></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Qualification</label><input class="form-control" id="empQual" placeholder="e.g. MBBS, MD"></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Specialty</label><input class="form-control" id="empSpec" placeholder="e.g. Cardiology"></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Experience (Years)</label><input class="form-control" id="empExp" placeholder="e.g. 5"></div>
+            <div class="col-md-6 mb-3"><label class="form-label">Status</label><select class="form-select" id="empStatus"><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option><option value="RESIGNED">Resigned</option></select></div>
         </div>
     </div>
-</div>
+    <div class="modal-footer"><button class="btn btn-glass" data-bs-dismiss="modal">Cancel</button><button class="btn btn-primary-gradient" onclick="saveEmp()">Save Employee</button></div>
+</div></div></div>
 
-<!-- EMPLOYEE PROFILE MODAL -->
-<div class="modal fade" id="profileModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold"><i class="ph ph-identification-card me-2" style="color:#818cf8;"></i>Employee Profile</h5>
-                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="profileBody"></div>
-        </div>
+<!-- PROFILE MODAL -->
+<div class="modal fade" id="profileModal" tabindex="-1"><div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title fw-bold"><i class="ph ph-identification-card me-2" style="color:#818cf8;"></i>Employee Profile</h5>
+        <div class="ms-auto me-3"><button class="btn btn-glass btn-sm d-flex align-items-center gap-1" onclick="window.print()"><i class="ph ph-printer"></i> Print</button></div>
+        <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
     </div>
-</div>
+    <div class="modal-body" id="profileBody"></div>
+</div></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-const API = '/api/v1';
-const TID = '00000000-0000-0000-0000-000000000001';
-const H = { 'X-Tenant-ID': TID, 'Content-Type': 'application/json' };
-let currentModule = 'dashboard';
-let currentPage = 1; let totalPages = 1; let searchTimer = null;
-let depts = []; let desigs = [];
+const API='/api/v1', TID='00000000-0000-0000-0000-000000000001';
+const H={'X-Tenant-ID':TID,'Content-Type':'application/json'};
+let currentModule='dashboard', currentPage=1, searchTimer=null;
+let chartCat=null, chartDept=null;
 
-// ── Toast ──
-function toast(msg, ok = true) {
-    const el = document.getElementById('appToast');
-    el.style.borderLeft = `4px solid ${ok ? '#10b981' : '#ef4444'}`;
-    document.getElementById('toastMsg').innerHTML = `<i class="ph ${ok?'ph-check-circle text-success':'ph-x-circle text-danger'} me-2"></i>${msg}`;
-    new bootstrap.Toast(el, { delay: 3000 }).show();
+function toast(msg,ok=true){
+    const el=document.getElementById('appToast');
+    el.style.borderLeft=`4px solid ${ok?'#10b981':'#ef4444'}`;
+    document.getElementById('toastMsg').innerHTML=`<i class="ph ${ok?'ph-check-circle text-success':'ph-x-circle text-danger'} me-2"></i>${msg}`;
+    new bootstrap.Toast(el,{delay:3000}).show();
 }
 
-// ── API fetch helper ──
-async function api(path, opts = {}) {
-    const res = await fetch(API + path, { headers: H, ...opts });
-    return res;
+async function api(path,opts={}){ return fetch(API+path,{headers:H,...opts}); }
+
+// ── Seed Data ──
+async function seedData(){
+    if(!confirm('Load PDF sample data? (Departments, Designations, 10 Employees)')) return;
+    const res=await api('/seed/demo-data',{method:'POST'});
+    const data=await res.json();
+    if(res.ok){ toast(data.message); showDashboard(); }
+    else toast('Error loading demo data!',false);
 }
 
 // ── Dashboard ──
-async function showDashboard() {
-    setNav('dashboard');
-    currentModule = 'dashboard';
-    document.getElementById('main-content').innerHTML = `<div class="d-flex justify-content-center py-5"><div class="spinner-border text-primary"></div></div>`;
-    const [dRes, dgRes, eRes] = await Promise.all([
-        api('/departments?page_size=1'), api('/designations?page_size=1'), api('/employees?page_size=1')
-    ]);
-    const [d, dg, e] = await Promise.all([dRes.json(), dgRes.json(), eRes.json()]);
-    document.getElementById('main-content').innerHTML = `
-        <div class="mb-4">
-            <h2 style="font-weight:700;">Welcome to MedNXT HHRM</h2>
-            <p style="color:var(--muted);">Hospital Human Resource Management — Phase 1</p>
-        </div>
-        <div class="row g-3 mb-5">
-            <div class="col-md-4"><div class="stat-card">
-                <div class="stat-icon" style="background:rgba(99,102,241,0.15);"><i class="ph-fill ph-buildings" style="color:#818cf8;"></i></div>
+async function showDashboard(){
+    setNav('dashboard'); currentModule='dashboard';
+    document.getElementById('main-content').innerHTML=`<div class="d-flex justify-content-center py-5"><div class="spinner-border text-primary"></div></div>`;
+    const [dRes,dgRes,eRes]=await Promise.all([api('/departments?page_size=100'),api('/designations?page_size=100'),api('/employees?page_size=100')]);
+    const [d,dg,e]=await Promise.all([dRes.json(),dgRes.json(),eRes.json()]);
+
+    // Category breakdown for chart
+    const catCount={};
+    (e.items||[]).forEach(emp=>{ const c=emp.category||'OTHER'; catCount[c]=(catCount[c]||0)+1; });
+
+    document.getElementById('main-content').innerHTML=`
+        <div class="mb-4"><h2 style="font-weight:700;">Dashboard</h2><p style="color:var(--muted);">Hospital Human Resource Management — Phase 1</p></div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-4"><div class="stat-card" onclick="loadModule('departments')">
+                <div class="stat-icon" style="background:rgba(99,102,241,.15);"><i class="ph-fill ph-buildings" style="color:#818cf8;"></i></div>
                 <div><div class="stat-value">${d.total}</div><div class="stat-label">Total Departments</div></div>
             </div></div>
-            <div class="col-md-4"><div class="stat-card">
-                <div class="stat-icon" style="background:rgba(168,85,247,0.15);"><i class="ph-fill ph-tag" style="color:#c084fc;"></i></div>
+            <div class="col-md-4"><div class="stat-card" onclick="loadModule('designations')">
+                <div class="stat-icon" style="background:rgba(168,85,247,.15);"><i class="ph-fill ph-tag" style="color:#c084fc;"></i></div>
                 <div><div class="stat-value">${dg.total}</div><div class="stat-label">Total Designations</div></div>
             </div></div>
-            <div class="col-md-4"><div class="stat-card">
-                <div class="stat-icon" style="background:rgba(16,185,129,0.15);"><i class="ph-fill ph-users" style="color:#10b981;"></i></div>
+            <div class="col-md-4"><div class="stat-card" onclick="loadModule('employees')">
+                <div class="stat-icon" style="background:rgba(16,185,129,.15);"><i class="ph-fill ph-users" style="color:#10b981;"></i></div>
                 <div><div class="stat-value">${e.total}</div><div class="stat-label">Total Employees</div></div>
+            </div></div>
+        </div>
+        <div class="row g-3 mb-4">
+            <div class="col-md-6"><div class="chart-card">
+                <h6 class="fw-bold mb-3">Staff by Category</h6>
+                <canvas id="catChart" height="220"></canvas>
+            </div></div>
+            <div class="col-md-6"><div class="chart-card">
+                <h6 class="fw-bold mb-3">Employees by Department</h6>
+                <canvas id="deptChart" height="220"></canvas>
             </div></div>
         </div>
         <div class="row g-3">
             <div class="col-md-4"><div class="glass-card text-center p-4" style="cursor:pointer;" onclick="loadModule('departments')">
                 <i class="ph ph-buildings fs-1 mb-3" style="color:#818cf8; display:block;"></i>
-                <h5 class="fw-bold mb-1">Departments</h5>
-                <p style="color:var(--muted); font-size:.9rem;">Manage hospital departments</p>
+                <h5 class="fw-bold mb-1">Departments</h5><p style="color:var(--muted);font-size:.9rem;">Manage hospital departments</p>
             </div></div>
             <div class="col-md-4"><div class="glass-card text-center p-4" style="cursor:pointer;" onclick="loadModule('designations')">
                 <i class="ph ph-tag fs-1 mb-3" style="color:#c084fc; display:block;"></i>
-                <h5 class="fw-bold mb-1">Designations</h5>
-                <p style="color:var(--muted); font-size:.9rem;">Manage job roles and grades</p>
+                <h5 class="fw-bold mb-1">Designations</h5><p style="color:var(--muted);font-size:.9rem;">Manage job roles and grades</p>
             </div></div>
             <div class="col-md-4"><div class="glass-card text-center p-4" style="cursor:pointer;" onclick="loadModule('employees')">
                 <i class="ph ph-users fs-1 mb-3" style="color:#10b981; display:block;"></i>
-                <h5 class="fw-bold mb-1">Employees</h5>
-                <p style="color:var(--muted); font-size:.9rem;">Manage hospital staff</p>
+                <h5 class="fw-bold mb-1">Employees</h5><p style="color:var(--muted);font-size:.9rem;">Manage hospital staff</p>
             </div></div>
         </div>`;
+
+    // Draw Charts
+    const cats=Object.keys(catCount), catVals=Object.values(catCount);
+    const colors=['#6366f1','#a855f7','#10b981','#f59e0b','#ef4444','#06b6d4','#ec4899','#84cc16','#f97316','#8b5cf6'];
+    if(chartCat){ chartCat.destroy(); }
+    chartCat=new Chart(document.getElementById('catChart'),{
+        type:'doughnut',
+        data:{labels:cats,datasets:[{data:catVals,backgroundColor:colors,borderWidth:0,hoverOffset:6}]},
+        options:{plugins:{legend:{position:'right',labels:{color:'#94a3b8',font:{family:'Outfit',size:11}}}},cutout:'65%'}
+    });
+
+    // Dept chart: count employees per dept
+    const deptCount={};
+    (e.items||[]).forEach(emp=>{
+        const deptId=emp.department_id;
+        const deptName=(d.items||[]).find(x=>x.id===deptId)?.name || 'Unassigned';
+        deptCount[deptName]=(deptCount[deptName]||0)+1;
+    });
+    const dNames=Object.keys(deptCount), dVals=Object.values(deptCount);
+    if(chartDept){ chartDept.destroy(); }
+    chartDept=new Chart(document.getElementById('deptChart'),{
+        type:'bar',
+        data:{labels:dNames,datasets:[{label:'Employees',data:dVals,backgroundColor:'rgba(99,102,241,.6)',borderRadius:6,borderSkipped:false}]},
+        options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#94a3b8',font:{family:'Outfit',size:10}},grid:{display:false}},y:{ticks:{color:'#94a3b8',font:{family:'Outfit'}},grid:{color:'rgba(255,255,255,.04)'}}}}
+    });
 }
 
-// ── Set active nav ──
-function setNav(mod) {
-    document.querySelectorAll('.nav-link').forEach(e => e.classList.remove('active'));
-    const el = document.getElementById(`nav-${mod}`);
-    if (el) el.classList.add('active');
-}
+function setNav(mod){ document.querySelectorAll('.nav-link').forEach(e=>e.classList.remove('active')); const el=document.getElementById(`nav-${mod}`); if(el)el.classList.add('active'); }
 
-// ── Load Module ──
-async function loadModule(mod, page = 1, search = '') {
-    currentModule = mod; currentPage = page;
-    setNav(mod);
-    const info = {
-        departments: { title: 'Departments', sub: 'Manage hospital departments and cost centers', icon: 'ph-buildings' },
-        designations: { title: 'Designations', sub: 'Manage job roles, grades, and titles', icon: 'ph-tag' },
-        employees: { title: 'Employees', sub: 'Manage all hospital staff and medical personnel', icon: 'ph-users' },
-    };
-    const i = info[mod];
-    document.getElementById('main-content').innerHTML = `
+async function loadModule(mod,page=1,search=''){
+    currentModule=mod; currentPage=page; setNav(mod);
+    const info={departments:{title:'Departments',sub:'Manage hospital departments and cost centers'},designations:{title:'Designations',sub:'Manage job roles, grades, and titles'},employees:{title:'Employees',sub:'Manage all hospital staff and medical personnel'}};
+    const i=info[mod];
+    document.getElementById('main-content').innerHTML=`
         <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
-            <div>
-                <h2 style="font-weight:700;">${i.title}</h2>
-                <p style="color:var(--muted); margin:0;">${i.sub}</p>
+            <div><h2 style="font-weight:700;">${i.title}</h2><p style="color:var(--muted);margin:0;">${i.sub}</p></div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-glass d-flex align-items-center gap-2" onclick="exportCSV('${mod}')" style="font-size:.88rem;"><i class="ph ph-download-simple"></i>Export CSV</button>
+                <button class="btn btn-primary-gradient d-flex align-items-center gap-2" onclick="openAddModal()"><i class="ph ph-plus-circle fs-5"></i>Add New</button>
             </div>
-            <button class="btn btn-primary-gradient d-flex align-items-center gap-2" onclick="openAddModal()">
-                <i class="ph ph-plus-circle fs-5"></i> Add New
-            </button>
         </div>
         <div class="d-flex align-items-center gap-3 mb-4 flex-wrap">
-            <div style="position:relative;">
-                <i class="ph ph-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);"></i>
+            <div style="position:relative;"><i class="ph ph-magnifying-glass" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);"></i>
                 <input type="text" class="search-bar" id="searchInput" placeholder="Search ${i.title.toLowerCase()}..." style="padding-left:38px;" oninput="onSearch(this.value)" value="${search}">
             </div>
-            <select class="filter-select" id="statusFilter" onchange="applyFilter()">
+            <select class="filter-select" id="statusFilter" onchange="fetchData('${mod}',1,document.getElementById('searchInput').value)">
                 <option value="">All Status</option><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option>
             </select>
-            <span style="color:var(--muted); font-size:.85rem;" id="recordCount"></span>
+            <span style="color:var(--muted);font-size:.85rem;" id="recordCount"></span>
         </div>
         <div class="glass-card">
-            <div class="table-responsive">
-                <table class="table table-borderless">
-                    <thead id="table-head"></thead>
-                    <tbody id="table-body"><tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr></tbody>
-                </table>
-            </div>
+            <div class="table-responsive"><table class="table table-borderless"><thead id="table-head"></thead><tbody id="table-body"><tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr></tbody></table></div>
             <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2" id="paginationArea"></div>
         </div>`;
-    await fetchData(mod, page, search);
+    await fetchData(mod,page,search);
 }
 
-function onSearch(val) {
-    clearTimeout(searchTimer);
-    searchTimer = setTimeout(() => fetchData(currentModule, 1, val), 400);
+function onSearch(val){ clearTimeout(searchTimer); searchTimer=setTimeout(()=>fetchData(currentModule,1,val),400); }
+
+async function fetchData(mod,page=1,search=''){
+    currentPage=page;
+    const status=document.getElementById('statusFilter')?.value||'';
+    let url=`/${mod}?page=${page}&page_size=10`;
+    if(search) url+=`&search=${encodeURIComponent(search)}`;
+    if(status) url+=`&status=${status}`;
+    try{
+        const res=await api(url); const data=await res.json();
+        const total=data.pages||1;
+        document.getElementById('recordCount').innerText=`${data.total} record${data.total!==1?'s':''} found`;
+        renderTable(mod,data.items||[]);
+        renderPagination(page,total,search);
+    }catch{ document.getElementById('table-body').innerHTML=`<tr><td colspan="6"><div class="empty-state"><i class="ph ph-warning"></i><h5>Connection Error</h5></div></td></tr>`; }
 }
 
-async function applyFilter() {
-    await fetchData(currentModule, 1, document.getElementById('searchInput')?.value || '');
+// ── CSV Export ──
+async function exportCSV(mod){
+    const res=await api(`/${mod}?page_size=500`); const data=await res.json();
+    const items=data.items||[];
+    if(!items.length){ toast('No data to export!',false); return; }
+    let headers, rows;
+    if(mod==='departments'){ headers=['Name','Code','Cost Center','Status','Created']; rows=items.map(r=>[r.name,r.code||'',r.cost_center||'',r.status,r.created_at?.split('T')[0]||'']); }
+    else if(mod==='designations'){ headers=['Name','Code','Grade','Status','Created']; rows=items.map(r=>[r.name,r.code||'',r.grade||'',r.status,r.created_at?.split('T')[0]||'']); }
+    else{ headers=['EMP Code','First Name','Last Name','Email','Phone','Category','Gender','Blood Group','Qualification','Specialty','Experience','Joining Date','Status']; rows=items.map(r=>[r.employee_code,r.first_name,r.last_name||'',r.email||'',r.phone||'',r.category||'',r.gender||'',r.blood_group||'',r.qualification||'',r.specialty||'',r.experience_years||'',r.joining_date||'',r.employment_status]); }
+    const csv=[headers,...rows].map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+    const blob=new Blob([csv],{type:'text/csv'}); const url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download=`mednxt_${mod}_${Date.now()}.csv`; a.click();
+    toast('CSV exported!');
 }
 
-async function fetchData(mod, page = 1, search = '') {
-    currentPage = page;
-    const status = document.getElementById('statusFilter')?.value || '';
-    let url = `/${mod}?page=${page}&page_size=10`;
-    if (search) url += `&search=${encodeURIComponent(search)}`;
-    if (status) url += `&status=${status}`;
-    try {
-        const res = await api(url);
-        const data = await res.json();
-        totalPages = data.pages || 1;
-        document.getElementById('recordCount').innerText = `${data.total} record${data.total !== 1 ? 's' : ''} found`;
-        renderTable(mod, data.items || []);
-        renderPagination(page, totalPages, search);
-    } catch {
-        document.getElementById('table-body').innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="ph ph-warning"></i><h5>Connection Error</h5></div></td></tr>`;
-    }
+// ── Status Toggle ──
+async function toggleStatus(mod,id,current){
+    const newStatus=current==='ACTIVE'?'INACTIVE':'ACTIVE';
+    const res=await api(`/${mod}/${id}`,{method:'PUT',body:JSON.stringify(current==='ACTIVE'?{status:'INACTIVE'}:{status:'ACTIVE',employment_status:'ACTIVE'})});
+    if(res.ok){ toast(`Status changed to ${newStatus}`); fetchData(mod,currentPage); }
+    else toast('Error updating status!',false);
 }
 
-function renderPagination(page, total, search) {
-    const el = document.getElementById('paginationArea');
-    if (!el) return;
-    if (total <= 1) { el.innerHTML = ''; return; }
-    el.innerHTML = `
-        <span style="color:var(--muted); font-size:.85rem;">Page ${page} of ${total}</span>
-        <div class="d-flex gap-2">
-            <button class="page-btn" onclick="fetchData('${currentModule}',${page-1},'${search}')" ${page<=1?'disabled':''}>
-                <i class="ph ph-arrow-left"></i> Prev
-            </button>
-            <button class="page-btn" onclick="fetchData('${currentModule}',${page+1},'${search}')" ${page>=total?'disabled':''}>
-                Next <i class="ph ph-arrow-right"></i>
-            </button>
-        </div>`;
+function renderPagination(page,total,search){
+    const el=document.getElementById('paginationArea'); if(!el) return;
+    if(total<=1){el.innerHTML='';return;}
+    el.innerHTML=`<span style="color:var(--muted);font-size:.85rem;">Page ${page} of ${total}</span>
+    <div class="d-flex gap-2">
+        <button class="page-btn" onclick="fetchData('${currentModule}',${page-1},'${search}')" ${page<=1?'disabled':''}>← Prev</button>
+        <button class="page-btn" onclick="fetchData('${currentModule}',${page+1},'${search}')" ${page>=total?'disabled':''}>Next →</button>
+    </div>`;
 }
 
-function renderTable(mod, items) {
-    if (items.length === 0) {
-        document.getElementById('table-head').innerHTML = '';
-        document.getElementById('table-body').innerHTML = `<tr><td colspan="6"><div class="empty-state">
-            <i class="ph ph-folder-dashed"></i>
-            <h5>No Records Found</h5>
-            <p style="color:var(--muted);">Click <strong>+ Add New</strong> to create the first record.</p>
-        </div></td></tr>`;
+function sBadge(s){ return s==='ACTIVE'?`<span class="badge-active">${s}</span>`:`<span class="badge-inactive">${s}</span>`; }
+
+function renderTable(mod,items){
+    if(!items.length){
+        document.getElementById('table-head').innerHTML='';
+        document.getElementById('table-body').innerHTML=`<tr><td colspan="6"><div class="empty-state"><i class="ph ph-folder-dashed"></i><h5>No Records Found</h5><p style="color:var(--muted);">Click <strong>+ Add New</strong> to create the first record.</p></div></td></tr>`;
         return;
     }
-    let th = '', tb = '';
-    if (mod === 'departments') {
-        th = `<tr><th>Department</th><th>Code</th><th>Cost Center</th><th>Status</th><th class="text-end">Actions</th></tr>`;
-        items.forEach(r => tb += `<tr>
-            <td><span class="fw-medium">${r.name}</span>${r.description ? `<br><small style="color:var(--muted);">${r.description}</small>` : ''}</td>
-            <td style="color:var(--muted);">${r.code||'—'}</td>
-            <td>${r.cost_center||'—'}</td>
-            <td>${statusBadge(r.status)}</td>
+    let th='',tb='';
+    if(mod==='departments'){
+        th=`<tr><th>Department</th><th>Code</th><th>Cost Center</th><th>Status</th><th class="text-end">Actions</th></tr>`;
+        items.forEach(r=>tb+=`<tr>
+            <td><span class="fw-medium">${r.name}</span>${r.description?`<br><small style="color:var(--muted);">${r.description}</small>`:''}</td>
+            <td style="color:var(--muted);">${r.code||'—'}</td><td>${r.cost_center||'—'}</td>
+            <td onclick="toggleStatus('departments','${r.id}','${r.status}')" title="Click to toggle">${sBadge(r.status)}</td>
             <td class="text-end">
                 <button class="btn-icon me-1" onclick='editDept(${JSON.stringify(r)})'><i class="ph ph-pencil-simple"></i></button>
                 <button class="btn-icon danger" onclick="delRecord('departments','${r.id}')"><i class="ph ph-trash"></i></button>
             </td></tr>`);
-    } else if (mod === 'designations') {
-        th = `<tr><th>Designation</th><th>Grade</th><th>Code</th><th>Status</th><th class="text-end">Actions</th></tr>`;
-        items.forEach(r => tb += `<tr>
+    }else if(mod==='designations'){
+        th=`<tr><th>Designation</th><th>Grade</th><th>Code</th><th>Status</th><th class="text-end">Actions</th></tr>`;
+        items.forEach(r=>tb+=`<tr>
             <td class="fw-medium">${r.name}</td>
-            <td>${r.grade ? `<span class="badge-grade">${r.grade}</span>` : '—'}</td>
+            <td>${r.grade?`<span class="badge-grade">${r.grade}</span>`:'—'}</td>
             <td style="color:var(--muted);">${r.code||'—'}</td>
-            <td>${statusBadge(r.status)}</td>
+            <td onclick="toggleStatus('designations','${r.id}','${r.status}')" title="Click to toggle">${sBadge(r.status)}</td>
             <td class="text-end">
                 <button class="btn-icon me-1" onclick='editDesig(${JSON.stringify(r)})'><i class="ph ph-pencil-simple"></i></button>
                 <button class="btn-icon danger" onclick="delRecord('designations','${r.id}')"><i class="ph ph-trash"></i></button>
             </td></tr>`);
-    } else if (mod === 'employees') {
-        th = `<tr><th>Employee</th><th>EMP Code</th><th>Category</th><th>Status</th><th class="text-end">Actions</th></tr>`;
-        items.forEach(r => tb += `<tr>
-            <td>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="avatar">${r.first_name[0]}${(r.last_name||'')[0]||''}</div>
-                    <div><div class="fw-medium">${r.first_name} ${r.last_name||''}</div>
-                    <div style="color:var(--muted);font-size:.8rem;">${r.email||'No email'}</div></div>
-                </div>
-            </td>
+    }else{
+        th=`<tr><th>Employee</th><th>EMP Code</th><th>Category</th><th>Status</th><th class="text-end">Actions</th></tr>`;
+        items.forEach(r=>tb+=`<tr>
+            <td><div class="d-flex align-items-center gap-3">
+                <div class="avatar">${r.first_name[0]}${(r.last_name||'')[0]||''}</div>
+                <div><div class="fw-medium">${r.first_name} ${r.last_name||''}</div><div style="color:var(--muted);font-size:.8rem;">${r.email||'No email'}</div></div>
+            </div></td>
             <td style="color:var(--muted);">${r.employee_code}</td>
             <td><span style="font-size:.85rem;">${r.category||'—'}</span></td>
-            <td>${statusBadge(r.employment_status)}</td>
+            <td>${sBadge(r.employment_status)}</td>
             <td class="text-end">
                 <button class="btn-icon me-1" onclick='viewProfile(${JSON.stringify(r)})'><i class="ph ph-eye"></i></button>
                 <button class="btn-icon me-1" onclick='editEmp(${JSON.stringify(r)})'><i class="ph ph-pencil-simple"></i></button>
                 <button class="btn-icon danger" onclick="delRecord('employees','${r.id}')"><i class="ph ph-trash"></i></button>
             </td></tr>`);
     }
-    document.getElementById('table-head').innerHTML = th;
-    document.getElementById('table-body').innerHTML = tb;
+    document.getElementById('table-head').innerHTML=th;
+    document.getElementById('table-body').innerHTML=tb;
 }
 
-function statusBadge(s) {
-    if (s === 'ACTIVE') return `<span class="badge-active">Active</span>`;
-    return `<span class="badge-inactive">${s}</span>`;
-}
-
-// ── View Profile ──
-function viewProfile(r) {
-    document.getElementById('profileBody').innerHTML = `
+function viewProfile(r){
+    document.getElementById('profileBody').innerHTML=`
         <div class="d-flex align-items-center gap-4 mb-4">
             <div class="profile-avatar">${r.first_name[0]}${(r.last_name||'')[0]||''}</div>
-            <div>
-                <h4 class="fw-bold mb-1">${r.first_name} ${r.last_name||''}</h4>
-                <div style="color:var(--muted);">${r.employee_code} · ${r.category||'—'}</div>
-                <div class="mt-2">${statusBadge(r.employment_status)}</div>
-            </div>
+            <div><h4 class="fw-bold mb-1">${r.first_name} ${r.last_name||''}</h4>
+            <div style="color:var(--muted);">${r.employee_code} · ${r.category||'—'}</div>
+            <div class="mt-2">${sBadge(r.employment_status)}</div></div>
         </div>
         <div class="row g-3">
-            ${pf('Email', r.email||'—')}${pf('Phone', r.phone||'—')}
-            ${pf('Gender', r.gender||'—')}${pf('Blood Group', r.blood_group||'—')}
-            ${pf('Date of Birth', r.date_of_birth||'—')}${pf('Joining Date', r.joining_date||'—')}
-            ${pf('Qualification', r.qualification||'—')}${pf('Specialty', r.specialty||'—')}
-            ${pf('Experience', r.experience_years ? r.experience_years+' years' : '—')}
+            ${pf('Email',r.email||'—')}${pf('Phone',r.phone||'—')}${pf('Gender',r.gender||'—')}
+            ${pf('Blood Group',r.blood_group||'—')}${pf('Date of Birth',r.date_of_birth||'—')}${pf('Joining Date',r.joining_date||'—')}
+            ${pf('Qualification',r.qualification||'—')}${pf('Specialty',r.specialty||'—')}${pf('Experience',r.experience_years?r.experience_years+' yrs':'—')}
         </div>`;
     new bootstrap.Modal(document.getElementById('profileModal')).show();
 }
+function pf(l,v){ return `<div class="col-md-4"><div class="profile-field"><div class="profile-field-label">${l}</div><div class="fw-medium">${v}</div></div></div>`; }
 
-function pf(label, val) {
-    return `<div class="col-md-4"><div class="profile-field">
-        <div class="profile-field-label">${label}</div>
-        <div class="profile-field-value">${val}</div>
-    </div></div>`;
+async function delRecord(mod,id){
+    if(!confirm('Delete this record?')) return;
+    const res=await api(`/${mod}/${id}`,{method:'DELETE'});
+    if(res.ok){ toast('Deleted!'); fetchData(mod,currentPage); }
+    else toast('Error!',false);
 }
 
-// ── Delete ──
-async function delRecord(mod, id) {
-    if (!confirm('Delete this record?')) return;
-    const res = await api(`/${mod}/${id}`, { method: 'DELETE' });
-    if (res.ok) { toast('Record deleted!'); fetchData(mod, currentPage); }
-    else toast('Error deleting!', false);
+async function openAddModal(){
+    if(currentModule==='departments'){ clearDept(); document.getElementById('deptModalTitle').innerHTML='<i class="ph ph-buildings me-2" style="color:#818cf8;"></i>Add Department'; new bootstrap.Modal(document.getElementById('deptModal')).show(); }
+    else if(currentModule==='designations'){ clearDesig(); document.getElementById('desigModalTitle').innerHTML='<i class="ph ph-tag me-2" style="color:#818cf8;"></i>Add Designation'; new bootstrap.Modal(document.getElementById('desigModal')).show(); }
+    else{ clearEmp(); await loadDropdowns(); document.getElementById('empModalTitle').innerHTML='<i class="ph ph-user-plus me-2" style="color:#818cf8;"></i>Add Employee'; new bootstrap.Modal(document.getElementById('empModal')).show(); }
 }
 
-// ── Open Add Modal ──
-async function openAddModal() {
-    if (currentModule === 'departments') {
-        clearDept(); document.getElementById('deptModalTitle').innerHTML = '<i class="ph ph-buildings me-2" style="color:#818cf8;"></i>Add Department';
-        new bootstrap.Modal(document.getElementById('deptModal')).show();
-    } else if (currentModule === 'designations') {
-        clearDesig(); document.getElementById('desigModalTitle').innerHTML = '<i class="ph ph-tag me-2" style="color:#818cf8;"></i>Add Designation';
-        new bootstrap.Modal(document.getElementById('desigModal')).show();
-    } else if (currentModule === 'employees') {
-        clearEmp(); await loadDropdowns();
-        document.getElementById('empModalTitle').innerHTML = '<i class="ph ph-user-plus me-2" style="color:#818cf8;"></i>Add Employee';
-        new bootstrap.Modal(document.getElementById('empModal')).show();
-    }
+async function loadDropdowns(){
+    const [dr,dgr]=await Promise.all([api('/departments?page_size=100'),api('/designations?page_size=100')]);
+    const [dd,dgd]=await Promise.all([dr.json(),dgr.json()]);
+    document.getElementById('empDept').innerHTML='<option value="">-- Select Department --</option>'+(dd.items||[]).map(d=>`<option value="${d.id}">${d.name}</option>`).join('');
+    document.getElementById('empDesig').innerHTML='<option value="">-- Select Designation --</option>'+(dgd.items||[]).map(d=>`<option value="${d.id}">${d.name}</option>`).join('');
 }
 
-// ── Load dropdowns ──
-async function loadDropdowns() {
-    const [dr, dgr] = await Promise.all([api('/departments?page_size=100'), api('/designations?page_size=100')]);
-    const [dd, dgd] = await Promise.all([dr.json(), dgr.json()]);
-    depts = dd.items || []; desigs = dgd.items || [];
-    const ds = document.getElementById('empDept');
-    const dsg = document.getElementById('empDesig');
-    ds.innerHTML = '<option value="">-- Select Department --</option>' + depts.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
-    dsg.innerHTML = '<option value="">-- Select Designation --</option>' + desigs.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
-}
-
-// ── Dept helpers ──
-function clearDept() { ['deptId','deptName','deptCode','deptCostCenter','deptDesc'].forEach(f => document.getElementById(f).value=''); document.getElementById('deptStatus').value='ACTIVE'; }
-function editDept(r) {
-    document.getElementById('deptId').value = r.id;
-    document.getElementById('deptName').value = r.name;
-    document.getElementById('deptCode').value = r.code||'';
-    document.getElementById('deptCostCenter').value = r.cost_center||'';
-    document.getElementById('deptDesc').value = r.description||'';
-    document.getElementById('deptStatus').value = r.status;
-    document.getElementById('deptModalTitle').innerHTML = '<i class="ph ph-buildings me-2" style="color:#818cf8;"></i>Edit Department';
+function clearDept(){ ['deptId','deptName','deptCode','deptCostCenter','deptDesc'].forEach(f=>document.getElementById(f).value=''); document.getElementById('deptStatus').value='ACTIVE'; }
+function editDept(r){
+    document.getElementById('deptId').value=r.id; document.getElementById('deptName').value=r.name;
+    document.getElementById('deptCode').value=r.code||''; document.getElementById('deptCostCenter').value=r.cost_center||'';
+    document.getElementById('deptDesc').value=r.description||''; document.getElementById('deptStatus').value=r.status;
+    document.getElementById('deptModalTitle').innerHTML='<i class="ph ph-buildings me-2" style="color:#818cf8;"></i>Edit Department';
     new bootstrap.Modal(document.getElementById('deptModal')).show();
 }
-async function saveDept() {
-    const id = document.getElementById('deptId').value;
-    const body = { name: document.getElementById('deptName').value, code: document.getElementById('deptCode').value||null, cost_center: document.getElementById('deptCostCenter').value||null, description: document.getElementById('deptDesc').value||null, status: document.getElementById('deptStatus').value };
-    if (!body.name) { toast('Name is required!', false); return; }
-    const res = await api(id ? `/departments/${id}` : '/departments', { method: id ? 'PUT' : 'POST', body: JSON.stringify(body) });
-    if (res.ok) { bootstrap.Modal.getInstance(document.getElementById('deptModal')).hide(); toast(id ? 'Department updated!' : 'Department created!'); fetchData('departments', currentPage); }
-    else toast('Error saving!', false);
+async function saveDept(){
+    const id=document.getElementById('deptId').value;
+    const body={name:document.getElementById('deptName').value,code:document.getElementById('deptCode').value||null,cost_center:document.getElementById('deptCostCenter').value||null,description:document.getElementById('deptDesc').value||null,status:document.getElementById('deptStatus').value};
+    if(!body.name){toast('Name required!',false);return;}
+    const res=await api(id?`/departments/${id}`:'/departments',{method:id?'PUT':'POST',body:JSON.stringify(body)});
+    if(res.ok){bootstrap.Modal.getInstance(document.getElementById('deptModal')).hide();toast(id?'Updated!':'Created!');fetchData('departments',currentPage);}
+    else toast('Error!',false);
 }
 
-// ── Desig helpers ──
-function clearDesig() { ['desigId','desigName','desigCode','desigDesc'].forEach(f => document.getElementById(f).value=''); document.getElementById('desigGrade').value=''; document.getElementById('desigStatus').value='ACTIVE'; }
-function editDesig(r) {
-    document.getElementById('desigId').value = r.id;
-    document.getElementById('desigName').value = r.name;
-    document.getElementById('desigCode').value = r.code||'';
-    document.getElementById('desigGrade').value = r.grade||'';
-    document.getElementById('desigDesc').value = r.description||'';
-    document.getElementById('desigStatus').value = r.status;
-    document.getElementById('desigModalTitle').innerHTML = '<i class="ph ph-tag me-2" style="color:#818cf8;"></i>Edit Designation';
+function clearDesig(){ ['desigId','desigName','desigCode','desigDesc'].forEach(f=>document.getElementById(f).value=''); document.getElementById('desigGrade').value=''; document.getElementById('desigStatus').value='ACTIVE'; }
+function editDesig(r){
+    document.getElementById('desigId').value=r.id; document.getElementById('desigName').value=r.name;
+    document.getElementById('desigCode').value=r.code||''; document.getElementById('desigGrade').value=r.grade||'';
+    document.getElementById('desigDesc').value=r.description||''; document.getElementById('desigStatus').value=r.status;
+    document.getElementById('desigModalTitle').innerHTML='<i class="ph ph-tag me-2" style="color:#818cf8;"></i>Edit Designation';
     new bootstrap.Modal(document.getElementById('desigModal')).show();
 }
-async function saveDesig() {
-    const id = document.getElementById('desigId').value;
-    const body = { name: document.getElementById('desigName').value, code: document.getElementById('desigCode').value||null, grade: document.getElementById('desigGrade').value||null, description: document.getElementById('desigDesc').value||null, status: document.getElementById('desigStatus').value };
-    if (!body.name) { toast('Name is required!', false); return; }
-    const res = await api(id ? `/designations/${id}` : '/designations', { method: id ? 'PUT' : 'POST', body: JSON.stringify(body) });
-    if (res.ok) { bootstrap.Modal.getInstance(document.getElementById('desigModal')).hide(); toast(id ? 'Designation updated!' : 'Designation created!'); fetchData('designations', currentPage); }
-    else toast('Error saving!', false);
+async function saveDesig(){
+    const id=document.getElementById('desigId').value;
+    const body={name:document.getElementById('desigName').value,code:document.getElementById('desigCode').value||null,grade:document.getElementById('desigGrade').value||null,description:document.getElementById('desigDesc').value||null,status:document.getElementById('desigStatus').value};
+    if(!body.name){toast('Name required!',false);return;}
+    const res=await api(id?`/designations/${id}`:'/designations',{method:id?'PUT':'POST',body:JSON.stringify(body)});
+    if(res.ok){bootstrap.Modal.getInstance(document.getElementById('desigModal')).hide();toast(id?'Updated!':'Created!');fetchData('designations',currentPage);}
+    else toast('Error!',false);
 }
 
-// ── Emp helpers ──
-function clearEmp() { ['empId','empFirstName','empLastName','empEmail','empPhone','empDob','empJoining','empQual','empSpec','empExp'].forEach(f => document.getElementById(f).value=''); ['empGender','empBlood','empCategory'].forEach(f => document.getElementById(f).value=''); document.getElementById('empStatus').value='ACTIVE'; }
-function editEmp(r) {
-    clearEmp();
-    loadDropdowns().then(() => {
-        document.getElementById('empId').value = r.id;
-        document.getElementById('empFirstName').value = r.first_name;
-        document.getElementById('empLastName').value = r.last_name||'';
-        document.getElementById('empEmail').value = r.email||'';
-        document.getElementById('empPhone').value = r.phone||'';
-        document.getElementById('empGender').value = r.gender||'';
-        document.getElementById('empBlood').value = r.blood_group||'';
-        document.getElementById('empDob').value = r.date_of_birth||'';
-        document.getElementById('empCategory').value = r.category||'';
-        document.getElementById('empJoining').value = r.joining_date||'';
-        document.getElementById('empQual').value = r.qualification||'';
-        document.getElementById('empSpec').value = r.specialty||'';
-        document.getElementById('empExp').value = r.experience_years||'';
-        document.getElementById('empStatus').value = r.employment_status;
-        if (r.department_id) document.getElementById('empDept').value = r.department_id;
-        if (r.designation_id) document.getElementById('empDesig').value = r.designation_id;
-        document.getElementById('empModalTitle').innerHTML = '<i class="ph ph-pencil-simple me-2" style="color:#818cf8;"></i>Edit Employee';
-        new bootstrap.Modal(document.getElementById('empModal')).show();
-    });
-}
-async function saveEmp() {
-    const id = document.getElementById('empId').value;
-    const body = {
-        first_name: document.getElementById('empFirstName').value,
-        last_name: document.getElementById('empLastName').value||null,
-        email: document.getElementById('empEmail').value||null,
-        phone: document.getElementById('empPhone').value||null,
-        gender: document.getElementById('empGender').value||null,
-        blood_group: document.getElementById('empBlood').value||null,
-        date_of_birth: document.getElementById('empDob').value||null,
-        department_id: document.getElementById('empDept').value||null,
-        designation_id: document.getElementById('empDesig').value||null,
-        category: document.getElementById('empCategory').value||null,
-        joining_date: document.getElementById('empJoining').value||null,
-        qualification: document.getElementById('empQual').value||null,
-        specialty: document.getElementById('empSpec').value||null,
-        experience_years: document.getElementById('empExp').value||null,
-        employment_status: document.getElementById('empStatus').value,
-    };
-    if (!body.first_name) { toast('First name is required!', false); return; }
-    const res = await api(id ? `/employees/${id}` : '/employees', { method: id ? 'PUT' : 'POST', body: JSON.stringify(body) });
-    if (res.ok) { bootstrap.Modal.getInstance(document.getElementById('empModal')).hide(); toast(id ? 'Employee updated!' : 'Employee created!'); fetchData('employees', currentPage); }
-    else toast('Error saving!', false);
+function clearEmp(){ ['empId','empFirstName','empLastName','empEmail','empPhone','empDob','empJoining','empQual','empSpec','empExp'].forEach(f=>document.getElementById(f).value=''); ['empGender','empBlood','empCategory'].forEach(f=>document.getElementById(f).value=''); document.getElementById('empStatus').value='ACTIVE'; }
+function editEmp(r){ clearEmp(); loadDropdowns().then(()=>{
+    document.getElementById('empId').value=r.id; document.getElementById('empFirstName').value=r.first_name;
+    document.getElementById('empLastName').value=r.last_name||''; document.getElementById('empEmail').value=r.email||'';
+    document.getElementById('empPhone').value=r.phone||''; document.getElementById('empGender').value=r.gender||'';
+    document.getElementById('empBlood').value=r.blood_group||''; document.getElementById('empDob').value=r.date_of_birth||'';
+    document.getElementById('empCategory').value=r.category||''; document.getElementById('empJoining').value=r.joining_date||'';
+    document.getElementById('empQual').value=r.qualification||''; document.getElementById('empSpec').value=r.specialty||'';
+    document.getElementById('empExp').value=r.experience_years||''; document.getElementById('empStatus').value=r.employment_status;
+    if(r.department_id) document.getElementById('empDept').value=r.department_id;
+    if(r.designation_id) document.getElementById('empDesig').value=r.designation_id;
+    document.getElementById('empModalTitle').innerHTML='<i class="ph ph-pencil-simple me-2" style="color:#818cf8;"></i>Edit Employee';
+    new bootstrap.Modal(document.getElementById('empModal')).show();
+}); }
+async function saveEmp(){
+    const id=document.getElementById('empId').value;
+    const body={first_name:document.getElementById('empFirstName').value,last_name:document.getElementById('empLastName').value||null,email:document.getElementById('empEmail').value||null,phone:document.getElementById('empPhone').value||null,gender:document.getElementById('empGender').value||null,blood_group:document.getElementById('empBlood').value||null,date_of_birth:document.getElementById('empDob').value||null,department_id:document.getElementById('empDept').value||null,designation_id:document.getElementById('empDesig').value||null,category:document.getElementById('empCategory').value||null,joining_date:document.getElementById('empJoining').value||null,qualification:document.getElementById('empQual').value||null,specialty:document.getElementById('empSpec').value||null,experience_years:document.getElementById('empExp').value||null,employment_status:document.getElementById('empStatus').value};
+    if(!body.first_name){toast('First name required!',false);return;}
+    const res=await api(id?`/employees/${id}`:'/employees',{method:id?'PUT':'POST',body:JSON.stringify(body)});
+    if(res.ok){bootstrap.Modal.getInstance(document.getElementById('empModal')).hide();toast(id?'Updated!':'Employee created!');fetchData('employees',currentPage);}
+    else toast('Error!',false);
 }
 
-// Init
 showDashboard();
 </script>
 </body>

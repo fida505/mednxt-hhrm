@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 
 from app.core.config import settings
 from app.database import init_db
-from app.routers import departments, designations, employees
+from app.routers import departments, designations, employees, seed
 import os
 
 
@@ -36,6 +36,7 @@ app.add_middleware(
 app.include_router(departments.router, prefix=settings.API_V1_STR)
 app.include_router(designations.router, prefix=settings.API_V1_STR)
 app.include_router(employees.router, prefix=settings.API_V1_STR)
+app.include_router(seed.router, prefix=settings.API_V1_STR)
 
 # Serve Frontend Static Files
 app.mount("/static", StaticFiles(directory="frontend"), name="static")
