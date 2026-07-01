@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,24 +8,22 @@
     <style>
         body { background-color: #121212; color: #e0e0e0; }
         .navbar { background-color: #1f1f1f; border-bottom: 1px solid #333; }
-        .navbar-brand { color: #fff; font-weight: bold; }
         .card { background-color: #1e1e1e; border: 1px solid #333; }
-        .table { color: #e0e0e0; }
-        .table-striped>tbody>tr:nth-of-type(odd)>* { color: #e0e0e0; }
-        .form-control, .form-select { background-color: #2c2c2c; color: #fff; border: 1px solid #444; }
-        .form-control:focus, .form-select:focus { background-color: #333; color: #fff; box-shadow: none; border-color: #666; }
-        .btn-primary { background-color: #0d6efd; border: none; }
         .sidebar { background-color: #1a1a1a; min-height: calc(100vh - 56px); border-right: 1px solid #333; padding: 20px 0; }
         .nav-link { color: #bbb; margin-bottom: 10px; cursor: pointer; }
         .nav-link:hover, .nav-link.active { color: #fff; background-color: #333; border-radius: 4px; }
+        .table { color: #e0e0e0; }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">MedNXT HHRM</a>
-        <span class="text-muted ms-auto">Tenant: Default Hospital</span>
+        <a class="navbar-brand" href="#">🏥 MedNXT HHRM</a>
+        <div class="d-flex align-items-center">
+            <span class="text-muted me-3">Tenant: Default Hospital</span>
+            <a href="/docs" class="btn btn-outline-info btn-sm">View API Docs (Swagger)</a>
+        </div>
     </div>
 </nav>
 
@@ -35,53 +33,99 @@
         <div class="col-md-2 sidebar">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" id="nav-departments" onclick="showModule('departments')">Departments</a>
+                    <a class="nav-link active" id="nav-departments" onclick="loadData('departments')">🏢 Departments</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="nav-designations" onclick="showModule('designations')">Designations</a>
+                    <a class="nav-link" id="nav-designations" onclick="loadData('designations')">🏷️ Designations</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="nav-employees" onclick="showModule('employees')">Employees</a>
+                    <a class="nav-link" id="nav-employees" onclick="loadData('employees')">👥 Employees</a>
                 </li>
             </ul>
         </div>
 
         <!-- Main Content -->
-        <div class="col-md-10 p-4" id="main-content">
-            <!-- Content will be injected here by JS -->
-            <h2>Welcome to MedNXT HHRM Phase 1</h2>
-            <p>Select a module from the sidebar to manage data.</p>
-            <p class="text-success" id="api-status">Checking API connection...</p>
+        <div class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 id="module-title">🏢 Departments Management</h3>
+                <button class="btn btn-primary">+ Add New</button>
+            </div>
+            
+            <div class="card p-3">
+                <div class="table-responsive">
+                    <table class="table table-hover table-dark" id="data-table">
+                        <thead id="table-head">
+                            <!-- Headers dynamically injected -->
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Rows dynamically injected -->
+                            <tr><td colspan="5" class="text-center">Loading data from API...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    const API_URL = "http://localhost:8000/api/v1";
+    // Ensure this hits the relative path so it works everywhere
+    const API_URL = "/api/v1"; 
     const TENANT_ID = "00000000-0000-0000-0000-000000000001";
+    const HEADERS = {
+        'X-Tenant-ID': TENANT_ID,
+        'Content-Type': 'application/json'
+    };
 
-    async function checkAPI() {
-        try {
-            const res = await fetch("http://localhost:8000/");
-            if(res.ok) document.getElementById('api-status').innerText = "API Connected Successfully!";
-        } catch (e) {
-            document.getElementById('api-status').innerText = "API Connection Failed. Is backend running?";
-            document.getElementById('api-status').className = "text-danger";
-        }
-    }
-    checkAPI();
-
-    function showModule(module) {
+    async function loadData(module) {
+        // Update Sidebar UI
         document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
         document.getElementById(`nav-${module}`).classList.add('active');
         
-        let html = `<h3>${module.charAt(0).toUpperCase() + module.slice(1)} Management</h3>`;
-        html += `<button class="btn btn-primary mb-3" onclick="alert('Add functionality coming soon via JS!')">Add New</button>`;
-        html += `<p>Data table for ${module} will load here. (See Swagger docs at /docs for full API testing).</p>`;
-        
-        document.getElementById('main-content').innerHTML = html;
-        // In a real app, we'd fetch data here: fetch(\`\${API_URL}/\${module}\`, {headers: {'X-Tenant-ID': TENANT_ID}})
+        let titleMap = {
+            'departments': '🏢 Departments Management',
+            'designations': '🏷️ Designations Management',
+            'employees': '👥 Employees Management'
+        };
+        document.getElementById('module-title').innerText = titleMap[module];
+        document.getElementById('table-body').innerHTML = `<tr><td colspan="5" class="text-center">Loading...</td></tr>`;
+
+        try {
+            const res = await fetch(`${API_URL}/${module}`, { headers: HEADERS });
+            const data = await res.json();
+            renderTable(module, data.items || []);
+        } catch (e) {
+            document.getElementById('table-body').innerHTML = `<tr><td colspan="5" class="text-danger text-center">Failed to load API data. Make sure backend is running.</td></tr>`;
+        }
     }
+
+    function renderTable(module, items) {
+        let thead = '';
+        let tbody = '';
+
+        if(items.length === 0) {
+            document.getElementById('table-head').innerHTML = '';
+            document.getElementById('table-body').innerHTML = `<tr><td colspan="5" class="text-center">No records found. Use API Docs to add data.</td></tr>`;
+            return;
+        }
+
+        if(module === 'departments') {
+            thead = `<tr><th>Name</th><th>Code</th><th>Cost Center</th><th>Status</th><th>Actions</th></tr>`;
+            items.forEach(i => tbody += `<tr><td>${i.name}</td><td>${i.code || '-'}</td><td>${i.cost_center || '-'}</td><td><span class="badge bg-success">${i.status}</span></td><td><button class="btn btn-sm btn-outline-secondary">Edit</button></td></tr>`);
+        } else if(module === 'designations') {
+            thead = `<tr><th>Name</th><th>Grade</th><th>Code</th><th>Status</th><th>Actions</th></tr>`;
+            items.forEach(i => tbody += `<tr><td>${i.name}</td><td>${i.grade || '-'}</td><td>${i.code || '-'}</td><td><span class="badge bg-success">${i.status}</span></td><td><button class="btn btn-sm btn-outline-secondary">Edit</button></td></tr>`);
+        } else if(module === 'employees') {
+            thead = `<tr><th>EMP Code</th><th>Name</th><th>Category</th><th>Status</th><th>Actions</th></tr>`;
+            items.forEach(i => tbody += `<tr><td>${i.employee_code}</td><td>${i.first_name} ${i.last_name || ''}</td><td>${i.category || '-'}</td><td><span class="badge bg-primary">${i.employment_status}</span></td><td><button class="btn btn-sm btn-outline-secondary">View</button></td></tr>`);
+        }
+
+        document.getElementById('table-head').innerHTML = thead;
+        document.getElementById('table-body').innerHTML = tbody;
+    }
+
+    // Load initial data
+    loadData('departments');
 </script>
 </body>
 </html>
