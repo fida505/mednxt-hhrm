@@ -1,28 +1,222 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedNXT HHRM - Phase 1</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        body { background-color: #121212; color: #e0e0e0; }
-        .navbar { background-color: #1f1f1f; border-bottom: 1px solid #333; }
-        .card { background-color: #1e1e1e; border: 1px solid #333; }
-        .sidebar { background-color: #1a1a1a; min-height: calc(100vh - 56px); border-right: 1px solid #333; padding: 20px 0; }
-        .nav-link { color: #bbb; margin-bottom: 10px; cursor: pointer; }
-        .nav-link:hover, .nav-link.active { color: #fff; background-color: #333; border-radius: 4px; }
-        .table { color: #e0e0e0; }
+        :root {
+            --bg-dark: #0f111a;
+            --surface: rgba(25, 28, 41, 0.7);
+            --surface-hover: rgba(35, 39, 56, 0.9);
+            --primary: #6366f1;
+            --secondary: #a855f7;
+            --accent: #ec4899;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(12px);
+        }
+
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Glassmorphism Navbar */
+        .navbar { 
+            background: var(--surface);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--border); 
+            padding: 1rem 2rem;
+        }
+        
+        .navbar-brand { 
+            color: var(--text-main); 
+            font-weight: 700; 
+            font-size: 1.5rem;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Sidebar */
+        .sidebar { 
+            background: var(--surface);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            min-height: calc(100vh - 76px); 
+            border-right: 1px solid var(--border); 
+            padding: 2rem 1rem;
+        }
+
+        .nav-link { 
+            color: var(--text-muted); 
+            margin-bottom: 0.5rem; 
+            cursor: pointer; 
+            font-weight: 500;
+            padding: 12px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-link:hover { 
+            color: var(--text-main); 
+            background: var(--surface-hover); 
+            transform: translateX(5px);
+        }
+
+        .nav-link.active { 
+            color: #fff; 
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Premium Card */
+        .glass-card { 
+            background: var(--surface); 
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border); 
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Table Styling */
+        .table { color: var(--text-main); margin-bottom: 0; }
+        .table th { 
+            border-bottom: 1px solid var(--border); 
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            padding-bottom: 15px;
+        }
+        .table td { 
+            border-bottom: 1px solid rgba(255,255,255,0.03); 
+            padding: 15px 10px;
+            vertical-align: middle;
+        }
+        .table tbody tr {
+            transition: all 0.2s;
+        }
+        .table tbody tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        /* Badges & Buttons */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.8rem;
+        }
+        .badge.bg-success { background: rgba(16, 185, 129, 0.15) !important; color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge.bg-primary { background: rgba(99, 102, 241, 0.15) !important; color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
+            color: white;
+        }
+
+        .btn-glass {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 8px 16px;
+            transition: all 0.2s;
+        }
+        .btn-glass:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        .empty-state h5 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
+<nav class="navbar navbar-expand-lg sticky-top">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">🏥 MedNXT HHRM</a>
-        <div class="d-flex align-items-center">
-            <span class="text-muted me-3">Tenant: Default Hospital</span>
-            <a href="/docs" class="btn btn-outline-info btn-sm">View API Docs (Swagger)</a>
+        <a class="navbar-brand" href="#">
+            <i class="ph-fill ph-hospital"></i>
+            MedNXT <span class="brand-gradient">HHRM</span>
+        </a>
+        <div class="d-flex align-items-center gap-4">
+            <div class="d-flex align-items-center gap-2 text-muted" style="font-size: 0.9rem;">
+                <i class="ph ph-buildings"></i> Tenant: Default Hospital
+            </div>
+            <a href="/docs" class="btn btn-glass d-flex align-items-center gap-2">
+                <i class="ph ph-code"></i> API Docs
+            </a>
         </div>
     </div>
 </nav>
@@ -30,36 +224,48 @@
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar -->
-        <div class="col-md-2 sidebar">
+        <div class="col-md-2 sidebar p-4">
+            <p class="text-muted text-uppercase mb-4" style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 600;">Modules</p>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" id="nav-departments" onclick="loadData('departments')">🏢 Departments</a>
+                    <a class="nav-link active" id="nav-departments" onclick="loadData('departments')">
+                        <i class="ph ph-squares-four fs-5"></i> Departments
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="nav-designations" onclick="loadData('designations')">🏷️ Designations</a>
+                    <a class="nav-link" id="nav-designations" onclick="loadData('designations')">
+                        <i class="ph ph-tag fs-5"></i> Designations
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="nav-employees" onclick="loadData('employees')">👥 Employees</a>
+                    <a class="nav-link" id="nav-employees" onclick="loadData('employees')">
+                        <i class="ph ph-users fs-5"></i> Employees
+                    </a>
                 </li>
             </ul>
         </div>
 
         <!-- Main Content -->
-        <div class="col-md-10 p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 id="module-title">🏢 Departments Management</h3>
-                <button class="btn btn-primary">+ Add New</button>
+        <div class="col-md-10 p-5">
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 id="module-title" style="font-weight: 700; letter-spacing: -0.5px;">Departments</h2>
+                    <p class="text-muted mb-0" id="module-subtitle">Manage hospital departments and cost centers</p>
+                </div>
+                <button class="btn btn-gradient d-flex align-items-center gap-2">
+                    <i class="ph ph-plus-circle fs-5"></i> Add New
+                </button>
             </div>
             
-            <div class="card p-3">
+            <div class="glass-card">
                 <div class="table-responsive">
-                    <table class="table table-hover table-dark" id="data-table">
+                    <table class="table table-borderless" id="data-table">
                         <thead id="table-head">
                             <!-- Headers dynamically injected -->
                         </thead>
                         <tbody id="table-body">
                             <!-- Rows dynamically injected -->
-                            <tr><td colspan="5" class="text-center">Loading data from API...</td></tr>
+                            <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -69,7 +275,6 @@
 </div>
 
 <script>
-    // Ensure this hits the relative path so it works everywhere
     const API_URL = "/api/v1"; 
     const TENANT_ID = "00000000-0000-0000-0000-000000000001";
     const HEADERS = {
@@ -77,25 +282,35 @@
         'Content-Type': 'application/json'
     };
 
+    const moduleInfo = {
+        'departments': { title: 'Departments', subtitle: 'Manage hospital departments, heads, and budget' },
+        'designations': { title: 'Designations', subtitle: 'Manage job roles, grades, and titles' },
+        'employees': { title: 'Employees', subtitle: 'Manage hospital staff and medical personnel' }
+    };
+
     async function loadData(module) {
         // Update Sidebar UI
         document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
         document.getElementById(`nav-${module}`).classList.add('active');
         
-        let titleMap = {
-            'departments': '🏢 Departments Management',
-            'designations': '🏷️ Designations Management',
-            'employees': '👥 Employees Management'
-        };
-        document.getElementById('module-title').innerText = titleMap[module];
-        document.getElementById('table-body').innerHTML = `<tr><td colspan="5" class="text-center">Loading...</td></tr>`;
+        document.getElementById('module-title').innerText = moduleInfo[module].title;
+        document.getElementById('module-subtitle').innerText = moduleInfo[module].subtitle;
+        
+        document.getElementById('table-body').innerHTML = `<tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>`;
 
         try {
             const res = await fetch(`${API_URL}/${module}`, { headers: HEADERS });
             const data = await res.json();
             renderTable(module, data.items || []);
         } catch (e) {
-            document.getElementById('table-body').innerHTML = `<tr><td colspan="5" class="text-danger text-center">Failed to load API data. Make sure backend is running.</td></tr>`;
+            document.getElementById('table-body').innerHTML = `
+                <tr><td colspan="5">
+                    <div class="empty-state">
+                        <i class="ph ph-warning-circle text-danger"></i>
+                        <h5>Connection Error</h5>
+                        <p>Failed to connect to the MedNXT API.</p>
+                    </div>
+                </td></tr>`;
         }
     }
 
@@ -105,19 +320,58 @@
 
         if(items.length === 0) {
             document.getElementById('table-head').innerHTML = '';
-            document.getElementById('table-body').innerHTML = `<tr><td colspan="5" class="text-center">No records found. Use API Docs to add data.</td></tr>`;
+            document.getElementById('table-body').innerHTML = `
+                <tr><td colspan="5">
+                    <div class="empty-state">
+                        <i class="ph ph-folder-dashed"></i>
+                        <h5>No Records Found</h5>
+                        <p>Get started by creating a new record via the API Docs.</p>
+                        <a href="/docs" class="btn btn-glass mt-3">Open Swagger UI</a>
+                    </div>
+                </td></tr>`;
             return;
         }
 
         if(module === 'departments') {
-            thead = `<tr><th>Name</th><th>Code</th><th>Cost Center</th><th>Status</th><th>Actions</th></tr>`;
-            items.forEach(i => tbody += `<tr><td>${i.name}</td><td>${i.code || '-'}</td><td>${i.cost_center || '-'}</td><td><span class="badge bg-success">${i.status}</span></td><td><button class="btn btn-sm btn-outline-secondary">Edit</button></td></tr>`);
+            thead = `<tr><th>Department Name</th><th>Code</th><th>Cost Center</th><th>Status</th><th class="text-end">Actions</th></tr>`;
+            items.forEach(i => tbody += `
+                <tr>
+                    <td class="fw-medium">${i.name}</td>
+                    <td class="text-muted">${i.code || '-'}</td>
+                    <td>${i.cost_center || '-'}</td>
+                    <td><span class="badge bg-success">${i.status}</span></td>
+                    <td class="text-end"><button class="btn btn-sm btn-glass"><i class="ph ph-pencil-simple"></i></button></td>
+                </tr>`);
         } else if(module === 'designations') {
-            thead = `<tr><th>Name</th><th>Grade</th><th>Code</th><th>Status</th><th>Actions</th></tr>`;
-            items.forEach(i => tbody += `<tr><td>${i.name}</td><td>${i.grade || '-'}</td><td>${i.code || '-'}</td><td><span class="badge bg-success">${i.status}</span></td><td><button class="btn btn-sm btn-outline-secondary">Edit</button></td></tr>`);
+            thead = `<tr><th>Designation Title</th><th>Grade</th><th>Code</th><th>Status</th><th class="text-end">Actions</th></tr>`;
+            items.forEach(i => tbody += `
+                <tr>
+                    <td class="fw-medium">${i.name}</td>
+                    <td><span class="badge bg-primary">${i.grade || '-'}</span></td>
+                    <td class="text-muted">${i.code || '-'}</td>
+                    <td><span class="badge bg-success">${i.status}</span></td>
+                    <td class="text-end"><button class="btn btn-sm btn-glass"><i class="ph ph-pencil-simple"></i></button></td>
+                </tr>`);
         } else if(module === 'employees') {
-            thead = `<tr><th>EMP Code</th><th>Name</th><th>Category</th><th>Status</th><th>Actions</th></tr>`;
-            items.forEach(i => tbody += `<tr><td>${i.employee_code}</td><td>${i.first_name} ${i.last_name || ''}</td><td>${i.category || '-'}</td><td><span class="badge bg-primary">${i.employment_status}</span></td><td><button class="btn btn-sm btn-outline-secondary">View</button></td></tr>`);
+            thead = `<tr><th>Employee</th><th>EMP Code</th><th>Category</th><th>Status</th><th class="text-end">Actions</th></tr>`;
+            items.forEach(i => tbody += `
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold" style="width: 40px; height: 40px;">
+                                ${i.first_name.charAt(0)}${i.last_name ? i.last_name.charAt(0) : ''}
+                            </div>
+                            <div>
+                                <div class="fw-medium">${i.first_name} ${i.last_name || ''}</div>
+                                <div class="text-muted" style="font-size: 0.8rem;">${i.email || 'No email'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-muted">${i.employee_code}</td>
+                    <td>${i.category || '-'}</td>
+                    <td><span class="badge bg-success">${i.employment_status}</span></td>
+                    <td class="text-end"><button class="btn btn-sm btn-glass"><i class="ph ph-caret-right"></i></button></td>
+                </tr>`);
         }
 
         document.getElementById('table-head').innerHTML = thead;
