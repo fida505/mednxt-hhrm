@@ -146,6 +146,7 @@ def delete_employee(
 
 
 from fastapi import UploadFile, File
+from fastapi.responses import Response
 from app.models.document import EmployeeDocument
 from app.schemas.document import DocumentOut
 import os
@@ -154,8 +155,10 @@ import shutil
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB limit
+
 @router.post("/{emp_id}/documents", response_model=DocumentOut, status_code=201)
-def upload_employee_document(
+async def upload_employee_document(
     emp_id: str,
     request: Request,
     file: UploadFile = File(...),
@@ -173,27 +176,27 @@ def upload_employee_document(
     if not emp:
         raise HTTPException(status_code=404, detail="Employee not found")
 
-    # Generate safe unique filename
+    # Read file bytes into memory (store in DB to handle Railway ephemeral FS)
+    file_bytes = await file.read()
+    if len(file_bytes) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=413, detail="File too large. Max 10MB allowed.")
+
+    # Save to DB (also keep file_path as reference string)
     import uuid
-    ext = os.path.splitext(file.filename)[1]
-    safe_filename = f"{uuid.uuid4()}{ext}"
-    file_path = os.path.join(UPLOAD_DIR, safe_filename)
-
-    # Save file to disk
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    # Save to DB
+    safe_filename = f"{uuid.uuid4()}{os.path.splitext(file.filename)[1]}"
+    
     doc = EmployeeDocument(
         tenant_id=tenant_id,
         employee_id=emp_id,
         filename=file.filename,
-        file_path=file_path,
-        content_type=file.content_type
+        file_path=safe_filename,  # just a reference name, not an actual disk path
+        content_type=file.content_type,
+        file_size=len(file_bytes),
+        file_data=file_bytes,  # stored in DB
     )
     db.add(doc)
     db.flush()
-    log_audit(db, tenant_id, "employee_documents", doc.id, "CREATE", user_role, {"filename": file.filename})
+    log_audit(db, tenant_id, "employee_documents", doc.id, "CREATE", user_role, {"filename": file.filename, "size": len(file_bytes)})
     db.commit()
     db.refresh(doc)
     return doc
@@ -205,7 +208,6 @@ def list_employee_documents(
     db: Session = Depends(get_db),
     tenant_id: str = Depends(get_tenant_id),
 ):
-    # Verify employee exists
     emp = db.query(Employee).filter(
         Employee.id == emp_id,
         Employee.tenant_id == tenant_id,
@@ -220,3 +222,30 @@ def list_employee_documents(
         EmployeeDocument.is_deleted == False
     ).all()
     return docs
+
+
+@router.get("/{emp_id}/documents/{doc_id}/download")
+def download_employee_document(
+    emp_id: str,
+    doc_id: str,
+    db: Session = Depends(get_db),
+    tenant_id: str = Depends(get_tenant_id),
+):
+    """Download a document - streams bytes stored in DB."""
+    doc = db.query(EmployeeDocument).filter(
+        EmployeeDocument.id == doc_id,
+        EmployeeDocument.employee_id == emp_id,
+        EmployeeDocument.tenant_id == tenant_id,
+        EmployeeDocument.is_deleted == False,
+    ).first()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    if not doc.file_data:
+        raise HTTPException(status_code=404, detail="File data not available")
+
+    return Response(
+        content=doc.file_data,
+        media_type=doc.content_type or "application/octet-stream",
+        headers={"Content-Disposition": f'attachment; filename="{doc.filename}"'},
+    )
+

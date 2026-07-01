@@ -489,8 +489,10 @@ async function viewProfile(r){
         const docs = await dRes.json();
         if(docs.length) {
             docsHtml = docs.map(d => `<div class="d-flex justify-content-between align-items-center mb-2 p-2" style="background:rgba(255,255,255,.03); border-radius:8px;">
-                <div class="d-flex align-items-center gap-2"><i class="ph ph-file-text" style="color:#818cf8;"></i><span style="font-size:0.9rem;">${d.filename}</span></div>
-                <a href="/${d.file_path.replace('\\','/')}" target="_blank" class="btn-icon"><i class="ph ph-download-simple"></i></a>
+                <div class="d-flex align-items-center gap-2"><i class="ph ph-file-text" style="color:#818cf8;"></i>
+                    <div><div style="font-size:0.9rem;">${d.filename}</div><div style="font-size:0.75rem;color:var(--muted);">${d.file_size ? (d.file_size/1024).toFixed(1)+' KB' : ''}</div></div>
+                </div>
+                <a href="${API}/employees/${r.id}/documents/${d.id}/download" target="_blank" class="btn-icon" title="Download"><i class="ph ph-download-simple"></i></a>
             </div>`).join('');
         } else {
             docsHtml = `<div style="color:var(--muted); font-size:0.85rem; text-align:center; padding:10px;">No documents uploaded.</div>`;
