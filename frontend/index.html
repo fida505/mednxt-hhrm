@@ -4,209 +4,174 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedNXT HHRM - Phase 1</title>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         :root {
             --bg-dark: #0f111a;
-            --surface: rgba(25, 28, 41, 0.7);
+            --surface: rgba(25, 28, 41, 0.85);
             --surface-hover: rgba(35, 39, 56, 0.9);
             --primary: #6366f1;
             --secondary: #a855f7;
-            --accent: #ec4899;
             --text-main: #ffffff;
             --text-muted: #cbd5e1;
             --border: rgba(255, 255, 255, 0.08);
             --glass-blur: blur(12px);
         }
-
-        body { 
-            background-color: var(--bg-dark); 
-            color: var(--text-main); 
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
             font-family: 'Outfit', sans-serif;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            text-rendering: optimizeLegibility;
             min-height: 100vh;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99,102,241,0.15) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168,85,247,0.15) 0, transparent 50%);
             background-attachment: fixed;
         }
-
-        /* Glassmorphism Navbar */
-        .navbar { 
+        .navbar {
             background: var(--surface);
             backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--border); 
+            border-bottom: 1px solid var(--border);
             padding: 1rem 2rem;
         }
-        
-        .navbar-brand { 
-            color: var(--text-main); 
-            font-weight: 700; 
+        .navbar-brand {
+            color: var(--text-main);
+            font-weight: 700;
             font-size: 1.5rem;
-            letter-spacing: -0.5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 10px;
         }
-
         .brand-gradient {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
-        /* Sidebar */
-        .sidebar { 
+        .sidebar {
             background: var(--surface);
             backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            min-height: calc(100vh - 76px); 
-            border-right: 1px solid var(--border); 
+            min-height: calc(100vh - 76px);
+            border-right: 1px solid var(--border);
             padding: 2rem 1rem;
         }
-
-        .nav-link { 
-            color: var(--text-muted); 
-            margin-bottom: 0.5rem; 
-            cursor: pointer; 
+        .nav-link {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            cursor: pointer;
             font-weight: 500;
             padding: 12px 20px;
             border-radius: 12px;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            display: flex; align-items: center; gap: 12px;
         }
-
-        .nav-link:hover { 
-            color: var(--text-main); 
-            background: var(--surface-hover); 
-            transform: translateX(5px);
-        }
-
-        .nav-link.active { 
-            color: #fff; 
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
-            border: 1px solid rgba(99, 102, 241, 0.3);
+        .nav-link:hover { color: var(--text-main); background: var(--surface-hover); transform: translateX(5px); }
+        .nav-link.active {
+            color: #fff;
+            background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2));
+            border: 1px solid rgba(99,102,241,0.3);
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
-
-        /* Premium Card */
-        .glass-card { 
-            background: var(--surface); 
+        .glass-card {
+            background: var(--surface);
             backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--border); 
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 2rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            animation: fadeIn 0.5s ease-out;
+            animation: fadeIn 0.4s ease-out;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Table Styling */
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
         .table { color: var(--text-main); margin-bottom: 0; }
-        .table th { 
-            border-bottom: 1px solid var(--border); 
+        .table th {
+            border-bottom: 1px solid var(--border);
             color: var(--text-muted);
             font-weight: 500;
             text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
+            font-size: 0.8rem;
+            letter-spacing: 0.8px;
             padding-bottom: 15px;
         }
-        .table td { 
-            border-bottom: 1px solid rgba(255,255,255,0.03); 
-            padding: 15px 10px;
-            vertical-align: middle;
-        }
-        .table tbody tr {
-            transition: all 0.2s;
-        }
-        .table tbody tr:hover {
-            background: rgba(255,255,255,0.02);
-        }
-
-        /* Badges & Buttons */
-        .badge {
-            padding: 6px 12px;
-            border-radius: 30px;
-            font-weight: 500;
-            font-size: 0.8rem;
-        }
-        .badge.bg-success { background: rgba(16, 185, 129, 0.15) !important; color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .badge.bg-primary { background: rgba(99, 102, 241, 0.15) !important; color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
-
+        .table td { border-bottom: 1px solid rgba(255,255,255,0.03); padding: 15px 10px; vertical-align: middle; }
+        .table tbody tr:hover { background: rgba(255,255,255,0.02); }
+        .badge { padding: 6px 12px; border-radius: 30px; font-weight: 500; font-size: 0.8rem; }
+        .badge.bg-success { background: rgba(16,185,129,0.15) !important; color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+        .badge.bg-primary { background: rgba(99,102,241,0.15) !important; color: #818cf8; border: 1px solid rgba(99,102,241,0.3); }
         .btn-gradient {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
-            color: white;
-            padding: 10px 24px;
-            border-radius: 12px;
-            font-weight: 600;
+            border: none; color: white;
+            padding: 10px 24px; border-radius: 12px; font-weight: 600;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 15px rgba(99,102,241,0.4);
         }
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.6);
-            color: white;
-        }
-
+        .btn-gradient:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.6); color: white; }
         .btn-glass {
             background: rgba(255,255,255,0.05);
             border: 1px solid var(--border);
             color: var(--text-main);
+            border-radius: 10px; padding: 8px 16px; transition: all 0.2s;
+        }
+        .btn-glass:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        /* Modal Styling */
+        .modal-content {
+            background: #161929;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+        }
+        .modal-header {
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+        }
+        .modal-body { padding: 1.5rem 2rem; }
+        .modal-footer { border-top: 1px solid var(--border); padding: 1.2rem 2rem; }
+        .form-label { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-bottom: 6px; }
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text-main);
             border-radius: 10px;
-            padding: 8px 16px;
+            padding: 10px 14px;
             transition: all 0.2s;
         }
-        .btn-glass:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
+        .form-control:focus, .form-select:focus {
+            background: rgba(255,255,255,0.08);
+            border-color: var(--primary);
+            color: var(--text-main);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+        }
+        .form-control::placeholder { color: #475569; }
+        .form-select option { background: #161929; }
+
+        /* Toast */
+        .toast-container { z-index: 9999; }
+        .toast {
+            background: #1e2235;
+            border: 1px solid var(--border);
+            border-radius: 12px;
         }
 
         /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-        }
-        .empty-state i {
-            font-size: 4rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-        .empty-state h5 {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        .empty-state p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
+        .empty-state { text-align: center; padding: 4rem 2rem; }
+        .empty-state i { font-size: 4rem; color: var(--text-muted); margin-bottom: 1rem; opacity: 0.4; display: block; }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: var(--bg-dark); }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
 </head>
 <body>
 
+<!-- Toast Notification -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="appToast" class="toast align-items-center text-white border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body fw-medium" id="toastMsg">Saved successfully!</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="#">
@@ -214,7 +179,7 @@
             MedNXT <span class="brand-gradient">HHRM</span>
         </a>
         <div class="d-flex align-items-center gap-4">
-            <div class="d-flex align-items-center gap-2 text-muted" style="font-size: 0.9rem;">
+            <div class="d-flex align-items-center gap-2" style="color: var(--text-muted); font-size:0.9rem;">
                 <i class="ph ph-buildings"></i> Tenant: Default Hospital
             </div>
             <a href="/docs" class="btn btn-glass d-flex align-items-center gap-2">
@@ -228,47 +193,31 @@
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-2 sidebar p-4">
-            <p class="text-muted text-uppercase mb-4" style="font-size: 0.75rem; letter-spacing: 1px; font-weight: 600;">Modules</p>
+            <p style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; font-weight:600;" class="mb-4">Modules</p>
             <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link active" id="nav-departments" onclick="loadData('departments')">
-                        <i class="ph ph-squares-four fs-5"></i> Departments
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="nav-designations" onclick="loadData('designations')">
-                        <i class="ph ph-tag fs-5"></i> Designations
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="nav-employees" onclick="loadData('employees')">
-                        <i class="ph ph-users fs-5"></i> Employees
-                    </a>
-                </li>
+                <li><a class="nav-link active" id="nav-departments" onclick="loadData('departments')"><i class="ph ph-squares-four fs-5"></i> Departments</a></li>
+                <li><a class="nav-link" id="nav-designations" onclick="loadData('designations')"><i class="ph ph-tag fs-5"></i> Designations</a></li>
+                <li><a class="nav-link" id="nav-employees" onclick="loadData('employees')"><i class="ph ph-users fs-5"></i> Employees</a></li>
             </ul>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main -->
         <div class="col-md-10 p-5">
             <div class="d-flex justify-content-between align-items-center mb-5">
                 <div>
-                    <h2 id="module-title" style="font-weight: 700; letter-spacing: -0.5px;">Departments</h2>
-                    <p class="mb-0" id="module-subtitle" style="color: #cbd5e1;">Manage hospital departments and cost centers</p>
+                    <h2 id="module-title" style="font-weight:700; letter-spacing:-0.5px;">Departments</h2>
+                    <p class="mb-0" id="module-subtitle" style="color:var(--text-muted);">Manage hospital departments and cost centers</p>
                 </div>
-                <button class="btn btn-gradient d-flex align-items-center gap-2">
+                <button class="btn btn-gradient d-flex align-items-center gap-2" onclick="openAddModal()">
                     <i class="ph ph-plus-circle fs-5"></i> Add New
                 </button>
             </div>
-            
             <div class="glass-card">
                 <div class="table-responsive">
                     <table class="table table-borderless" id="data-table">
-                        <thead id="table-head">
-                            <!-- Headers dynamically injected -->
-                        </thead>
+                        <thead id="table-head"></thead>
                         <tbody id="table-body">
-                            <!-- Rows dynamically injected -->
-                            <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>
+                            <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -277,111 +226,419 @@
     </div>
 </div>
 
+<!-- ADD DEPARTMENT MODAL -->
+<div class="modal fade" id="deptModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="deptModalTitle">Add Department</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="deptId">
+                <div class="mb-3">
+                    <label class="form-label">Department Name *</label>
+                    <input type="text" class="form-control" id="deptName" placeholder="e.g. Cardiology">
+                </div>
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Code</label>
+                        <input type="text" class="form-control" id="deptCode" placeholder="e.g. CARD">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Cost Center</label>
+                        <input type="text" class="form-control" id="deptCostCenter" placeholder="e.g. CC-001">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" id="deptDesc" rows="2" placeholder="Brief description..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="deptStatus">
+                        <option value="ACTIVE">Active</option>
+                        <option value="INACTIVE">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-gradient" onclick="saveDept()">Save Department</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD DESIGNATION MODAL -->
+<div class="modal fade" id="desigModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="desigModalTitle">Add Designation</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="desigId">
+                <div class="mb-3">
+                    <label class="form-label">Designation Title *</label>
+                    <input type="text" class="form-control" id="desigName" placeholder="e.g. Senior Consultant">
+                </div>
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Code</label>
+                        <input type="text" class="form-control" id="desigCode" placeholder="e.g. SC-01">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label">Grade</label>
+                        <select class="form-select" id="desigGrade">
+                            <option value="">Select Grade</option>
+                            <option>Grade A</option><option>Grade B</option>
+                            <option>Grade C</option><option>Grade D</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" id="desigDesc" rows="2" placeholder="Brief description..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" id="desigStatus">
+                        <option value="ACTIVE">Active</option>
+                        <option value="INACTIVE">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-gradient" onclick="saveDesig()">Save Designation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD EMPLOYEE MODAL -->
+<div class="modal fade" id="empModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="empModalTitle">Add Employee</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="empId">
+                <p class="fw-semibold mb-3" style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px;">Personal Information</p>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">First Name *</label>
+                        <input type="text" class="form-control" id="empFirstName" placeholder="First name">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="empLastName" placeholder="Last name">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="empEmail" placeholder="email@hospital.com">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="empPhone" placeholder="+91 XXXXXXXXXX">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Gender</label>
+                        <select class="form-select" id="empGender">
+                            <option value="">Select</option>
+                            <option>MALE</option><option>FEMALE</option><option>OTHER</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Blood Group</label>
+                        <select class="form-select" id="empBlood">
+                            <option value="">Select</option>
+                            <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                            <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="empDob">
+                    </div>
+                </div>
+                <hr style="border-color:var(--border);">
+                <p class="fw-semibold mb-3" style="color:var(--text-muted); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px;">Employment Information</p>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" id="empCategory">
+                            <option value="">Select Category</option>
+                            <option>DOCTOR</option><option>NURSE</option><option>PHARMACIST</option>
+                            <option>LAB_STAFF</option><option>RADIOLOGY_STAFF</option>
+                            <option>RECEPTIONIST</option><option>HR_STAFF</option>
+                            <option>FINANCE_STAFF</option><option>HOUSEKEEPING</option>
+                            <option>SECURITY</option><option>IT_STAFF</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Joining Date</label>
+                        <input type="date" class="form-control" id="empJoining">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Qualification</label>
+                        <input type="text" class="form-control" id="empQual" placeholder="e.g. MBBS, MD">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Specialty</label>
+                        <input type="text" class="form-control" id="empSpec" placeholder="e.g. Cardiology">
+                    </div>
+                    <div class="col-12 mb-3">
+                        <label class="form-label">Employment Status</label>
+                        <select class="form-select" id="empStatus">
+                            <option value="ACTIVE">Active</option>
+                            <option value="INACTIVE">Inactive</option>
+                            <option value="RESIGNED">Resigned</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-glass" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-gradient" onclick="saveEmp()">Save Employee</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const API_URL = "/api/v1"; 
+    const API_URL = "/api/v1";
     const TENANT_ID = "00000000-0000-0000-0000-000000000001";
-    const HEADERS = {
-        'X-Tenant-ID': TENANT_ID,
-        'Content-Type': 'application/json'
-    };
+    const HEADERS = { 'X-Tenant-ID': TENANT_ID, 'Content-Type': 'application/json' };
+    let currentModule = 'departments';
 
     const moduleInfo = {
-        'departments': { title: 'Departments', subtitle: 'Manage hospital departments, heads, and budget' },
+        'departments': { title: 'Departments', subtitle: 'Manage hospital departments and cost centers' },
         'designations': { title: 'Designations', subtitle: 'Manage job roles, grades, and titles' },
         'employees': { title: 'Employees', subtitle: 'Manage hospital staff and medical personnel' }
     };
 
+    function showToast(msg, success = true) {
+        document.getElementById('toastMsg').innerText = msg;
+        const t = document.getElementById('appToast');
+        t.style.borderLeft = `4px solid ${success ? '#10b981' : '#ef4444'}`;
+        new bootstrap.Toast(t, { delay: 3000 }).show();
+    }
+
+    function openAddModal() {
+        if (currentModule === 'departments') {
+            document.getElementById('deptId').value = '';
+            document.getElementById('deptName').value = '';
+            document.getElementById('deptCode').value = '';
+            document.getElementById('deptCostCenter').value = '';
+            document.getElementById('deptDesc').value = '';
+            document.getElementById('deptStatus').value = 'ACTIVE';
+            document.getElementById('deptModalTitle').innerText = 'Add Department';
+            new bootstrap.Modal(document.getElementById('deptModal')).show();
+        } else if (currentModule === 'designations') {
+            document.getElementById('desigId').value = '';
+            document.getElementById('desigName').value = '';
+            document.getElementById('desigCode').value = '';
+            document.getElementById('desigGrade').value = '';
+            document.getElementById('desigDesc').value = '';
+            document.getElementById('desigStatus').value = 'ACTIVE';
+            document.getElementById('desigModalTitle').innerText = 'Add Designation';
+            new bootstrap.Modal(document.getElementById('desigModal')).show();
+        } else if (currentModule === 'employees') {
+            document.getElementById('empId').value = '';
+            document.getElementById('empFirstName').value = '';
+            document.getElementById('empLastName').value = '';
+            document.getElementById('empEmail').value = '';
+            document.getElementById('empPhone').value = '';
+            document.getElementById('empGender').value = '';
+            document.getElementById('empBlood').value = '';
+            document.getElementById('empDob').value = '';
+            document.getElementById('empCategory').value = '';
+            document.getElementById('empJoining').value = '';
+            document.getElementById('empQual').value = '';
+            document.getElementById('empSpec').value = '';
+            document.getElementById('empStatus').value = 'ACTIVE';
+            document.getElementById('empModalTitle').innerText = 'Add Employee';
+            new bootstrap.Modal(document.getElementById('empModal')).show();
+        }
+    }
+
+    async function saveDept() {
+        const id = document.getElementById('deptId').value;
+        const body = {
+            name: document.getElementById('deptName').value,
+            code: document.getElementById('deptCode').value || null,
+            cost_center: document.getElementById('deptCostCenter').value || null,
+            description: document.getElementById('deptDesc').value || null,
+            status: document.getElementById('deptStatus').value,
+        };
+        if (!body.name) { showToast('Department name is required!', false); return; }
+        const url = id ? `${API_URL}/departments/${id}` : `${API_URL}/departments`;
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, { method, headers: HEADERS, body: JSON.stringify(body) });
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('deptModal')).hide();
+            showToast(id ? 'Department updated!' : 'Department created!');
+            loadData('departments');
+        } else { showToast('Error saving department!', false); }
+    }
+
+    async function saveDesig() {
+        const id = document.getElementById('desigId').value;
+        const body = {
+            name: document.getElementById('desigName').value,
+            code: document.getElementById('desigCode').value || null,
+            grade: document.getElementById('desigGrade').value || null,
+            description: document.getElementById('desigDesc').value || null,
+            status: document.getElementById('desigStatus').value,
+        };
+        if (!body.name) { showToast('Designation name is required!', false); return; }
+        const url = id ? `${API_URL}/designations/${id}` : `${API_URL}/designations`;
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, { method, headers: HEADERS, body: JSON.stringify(body) });
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('desigModal')).hide();
+            showToast(id ? 'Designation updated!' : 'Designation created!');
+            loadData('designations');
+        } else { showToast('Error saving designation!', false); }
+    }
+
+    async function saveEmp() {
+        const id = document.getElementById('empId').value;
+        const body = {
+            first_name: document.getElementById('empFirstName').value,
+            last_name: document.getElementById('empLastName').value || null,
+            email: document.getElementById('empEmail').value || null,
+            phone: document.getElementById('empPhone').value || null,
+            gender: document.getElementById('empGender').value || null,
+            blood_group: document.getElementById('empBlood').value || null,
+            date_of_birth: document.getElementById('empDob').value || null,
+            category: document.getElementById('empCategory').value || null,
+            joining_date: document.getElementById('empJoining').value || null,
+            qualification: document.getElementById('empQual').value || null,
+            specialty: document.getElementById('empSpec').value || null,
+            employment_status: document.getElementById('empStatus').value,
+        };
+        if (!body.first_name) { showToast('First name is required!', false); return; }
+        const url = id ? `${API_URL}/employees/${id}` : `${API_URL}/employees`;
+        const method = id ? 'PUT' : 'POST';
+        const res = await fetch(url, { method, headers: HEADERS, body: JSON.stringify(body) });
+        if (res.ok) {
+            bootstrap.Modal.getInstance(document.getElementById('empModal')).hide();
+            showToast(id ? 'Employee updated!' : 'Employee created!');
+            loadData('employees');
+        } else { showToast('Error saving employee!', false); }
+    }
+
+    async function deleteRecord(module, id) {
+        if (!confirm('Are you sure you want to delete this record?')) return;
+        const res = await fetch(`${API_URL}/${module}/${id}`, { method: 'DELETE', headers: HEADERS });
+        if (res.ok) { showToast('Record deleted!'); loadData(module); }
+        else { showToast('Error deleting record!', false); }
+    }
+
     async function loadData(module) {
-        // Update Sidebar UI
+        currentModule = module;
         document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
         document.getElementById(`nav-${module}`).classList.add('active');
-        
         document.getElementById('module-title').innerText = moduleInfo[module].title;
         document.getElementById('module-subtitle').innerText = moduleInfo[module].subtitle;
-        
-        document.getElementById('table-body').innerHTML = `<tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>`;
-
+        document.getElementById('table-body').innerHTML = `<tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>`;
         try {
-            const res = await fetch(`${API_URL}/${module}`, { headers: HEADERS });
+            const res = await fetch(`${API_URL}/${module}?page_size=50`, { headers: HEADERS });
             const data = await res.json();
             renderTable(module, data.items || []);
         } catch (e) {
-            document.getElementById('table-body').innerHTML = `
-                <tr><td colspan="5">
-                    <div class="empty-state">
-                        <i class="ph ph-warning-circle text-danger"></i>
-                        <h5>Connection Error</h5>
-                        <p>Failed to connect to the MedNXT API.</p>
-                    </div>
-                </td></tr>`;
+            document.getElementById('table-body').innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="ph ph-warning-circle text-danger"></i><h5>Connection Error</h5></div></td></tr>`;
         }
     }
 
     function renderTable(module, items) {
-        let thead = '';
-        let tbody = '';
-
-        if(items.length === 0) {
+        let thead = '', tbody = '';
+        if (items.length === 0) {
             document.getElementById('table-head').innerHTML = '';
             document.getElementById('table-body').innerHTML = `
-                <tr><td colspan="5">
-                    <div class="empty-state">
-                        <i class="ph ph-folder-dashed"></i>
-                        <h5>No Records Found</h5>
-                        <p>Get started by creating a new record via the API Docs.</p>
-                        <a href="/docs" class="btn btn-glass mt-3">Open Swagger UI</a>
-                    </div>
-                </td></tr>`;
+                <tr><td colspan="6"><div class="empty-state">
+                    <i class="ph ph-folder-dashed"></i>
+                    <h5>No Records Found</h5>
+                    <p style="color:var(--text-muted);">Click <strong>+ Add New</strong> to create your first record.</p>
+                </div></td></tr>`;
             return;
         }
-
-        if(module === 'departments') {
+        if (module === 'departments') {
             thead = `<tr><th>Department Name</th><th>Code</th><th>Cost Center</th><th>Status</th><th class="text-end">Actions</th></tr>`;
-            items.forEach(i => tbody += `
-                <tr>
-                    <td class="fw-medium">${i.name}</td>
-                    <td class="text-muted">${i.code || '-'}</td>
-                    <td>${i.cost_center || '-'}</td>
-                    <td><span class="badge bg-success">${i.status}</span></td>
-                    <td class="text-end"><button class="btn btn-sm btn-glass"><i class="ph ph-pencil-simple"></i></button></td>
-                </tr>`);
-        } else if(module === 'designations') {
+            items.forEach(i => tbody += `<tr>
+                <td class="fw-medium">${i.name}</td>
+                <td style="color:var(--text-muted);">${i.code || '-'}</td>
+                <td>${i.cost_center || '-'}</td>
+                <td><span class="badge bg-success">${i.status}</span></td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-glass me-1" onclick="editDept('${i.id}','${i.name}','${i.code||''}','${i.cost_center||''}','${i.description||''}','${i.status}')"><i class="ph ph-pencil-simple"></i></button>
+                    <button class="btn btn-sm btn-glass text-danger" onclick="deleteRecord('departments','${i.id}')"><i class="ph ph-trash"></i></button>
+                </td></tr>`);
+        } else if (module === 'designations') {
             thead = `<tr><th>Designation Title</th><th>Grade</th><th>Code</th><th>Status</th><th class="text-end">Actions</th></tr>`;
-            items.forEach(i => tbody += `
-                <tr>
-                    <td class="fw-medium">${i.name}</td>
-                    <td><span class="badge bg-primary">${i.grade || '-'}</span></td>
-                    <td class="text-muted">${i.code || '-'}</td>
-                    <td><span class="badge bg-success">${i.status}</span></td>
-                    <td class="text-end"><button class="btn btn-sm btn-glass"><i class="ph ph-pencil-simple"></i></button></td>
-                </tr>`);
-        } else if(module === 'employees') {
+            items.forEach(i => tbody += `<tr>
+                <td class="fw-medium">${i.name}</td>
+                <td><span class="badge bg-primary">${i.grade || '-'}</span></td>
+                <td style="color:var(--text-muted);">${i.code || '-'}</td>
+                <td><span class="badge bg-success">${i.status}</span></td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-glass me-1" onclick="editDesig('${i.id}','${i.name}','${i.code||''}','${i.grade||''}','${i.description||''}','${i.status}')"><i class="ph ph-pencil-simple"></i></button>
+                    <button class="btn btn-sm btn-glass text-danger" onclick="deleteRecord('designations','${i.id}')"><i class="ph ph-trash"></i></button>
+                </td></tr>`);
+        } else if (module === 'employees') {
             thead = `<tr><th>Employee</th><th>EMP Code</th><th>Category</th><th>Status</th><th class="text-end">Actions</th></tr>`;
-            items.forEach(i => tbody += `
-                <tr>
-                    <td>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold" style="width: 40px; height: 40px;">
-                                ${i.first_name.charAt(0)}${i.last_name ? i.last_name.charAt(0) : ''}
-                            </div>
-                            <div>
-                                <div class="fw-medium">${i.first_name} ${i.last_name || ''}</div>
-                                <div class="text-muted" style="font-size: 0.8rem;">${i.email || 'No email'}</div>
-                            </div>
+            items.forEach(i => tbody += `<tr>
+                <td>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width:40px;height:40px;background:rgba(99,102,241,0.15);color:#818cf8;flex-shrink:0;">
+                            ${i.first_name.charAt(0)}${(i.last_name||'').charAt(0)||''}
                         </div>
-                    </td>
-                    <td class="text-muted">${i.employee_code}</td>
-                    <td>${i.category || '-'}</td>
-                    <td><span class="badge bg-success">${i.employment_status}</span></td>
-                    <td class="text-end"><button class="btn btn-sm btn-glass"><i class="ph ph-caret-right"></i></button></td>
-                </tr>`);
+                        <div>
+                            <div class="fw-medium">${i.first_name} ${i.last_name||''}</div>
+                            <div style="color:var(--text-muted);font-size:0.8rem;">${i.email||'No email'}</div>
+                        </div>
+                    </div>
+                </td>
+                <td style="color:var(--text-muted);">${i.employee_code}</td>
+                <td>${i.category||'-'}</td>
+                <td><span class="badge bg-success">${i.employment_status}</span></td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-glass text-danger" onclick="deleteRecord('employees','${i.id}')"><i class="ph ph-trash"></i></button>
+                </td></tr>`);
         }
-
         document.getElementById('table-head').innerHTML = thead;
         document.getElementById('table-body').innerHTML = tbody;
     }
 
-    // Load initial data
+    function editDept(id, name, code, costCenter, desc, status) {
+        document.getElementById('deptId').value = id;
+        document.getElementById('deptName').value = name;
+        document.getElementById('deptCode').value = code;
+        document.getElementById('deptCostCenter').value = costCenter;
+        document.getElementById('deptDesc').value = desc;
+        document.getElementById('deptStatus').value = status;
+        document.getElementById('deptModalTitle').innerText = 'Edit Department';
+        new bootstrap.Modal(document.getElementById('deptModal')).show();
+    }
+
+    function editDesig(id, name, code, grade, desc, status) {
+        document.getElementById('desigId').value = id;
+        document.getElementById('desigName').value = name;
+        document.getElementById('desigCode').value = code;
+        document.getElementById('desigGrade').value = grade;
+        document.getElementById('desigDesc').value = desc;
+        document.getElementById('desigStatus').value = status;
+        document.getElementById('desigModalTitle').innerText = 'Edit Designation';
+        new bootstrap.Modal(document.getElementById('desigModal')).show();
+    }
+
     loadData('departments');
 </script>
 </body>
