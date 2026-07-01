@@ -249,3 +249,27 @@ def download_employee_document(
         headers={"Content-Disposition": f'attachment; filename="{doc.filename}"'},
     )
 
+
+@router.delete("/{emp_id}/documents/{doc_id}")
+def delete_employee_document(
+    emp_id: str,
+    doc_id: str,
+    request: Request,
+    db: Session = Depends(get_db),
+    tenant_id: str = Depends(get_tenant_id),
+):
+    user_role = request.headers.get("X-User-Role", "System")
+    doc = db.query(EmployeeDocument).filter(
+        EmployeeDocument.id == doc_id,
+        EmployeeDocument.employee_id == emp_id,
+        EmployeeDocument.tenant_id == tenant_id,
+        EmployeeDocument.is_deleted == False
+    ).first()
+
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+
+    doc.is_deleted = True
+    log_audit(db, tenant_id, "employee_documents", doc.id, "DELETE", user_role, {"filename": doc.filename})
+    db.commit()
+    return {"message": "Document deleted successfully"}

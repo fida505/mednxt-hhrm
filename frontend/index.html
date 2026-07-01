@@ -492,7 +492,10 @@ async function viewProfile(r){
                 <div class="d-flex align-items-center gap-2"><i class="ph ph-file-text" style="color:#818cf8;"></i>
                     <div><div style="font-size:0.9rem;">${d.filename}</div><div style="font-size:0.75rem;color:var(--muted);">${d.file_size ? (d.file_size/1024).toFixed(1)+' KB' : ''}</div></div>
                 </div>
-                <a href="${API}/employees/${r.id}/documents/${d.id}/download" target="_blank" class="btn-icon" title="Download"><i class="ph ph-download-simple"></i></a>
+                <div>
+                    <a href="${API}/employees/${r.id}/documents/${d.id}/download" target="_blank" class="btn-icon me-1" title="Download"><i class="ph ph-download-simple"></i></a>
+                    <button class="btn-icon danger" title="Delete" onclick="deleteDoc('${r.id}', '${d.id}', '${r.first_name.replace(/'/g, "\\'")}')"><i class="ph ph-trash"></i></button>
+                </div>
             </div>`).join('');
         } else {
             docsHtml = `<div style="color:var(--muted); font-size:0.85rem; text-align:center; padding:10px;">No documents uploaded.</div>`;
@@ -611,6 +614,18 @@ async function saveEmp(){
     if(!body.first_name){toast('First name required!',false);return;}
     const res=await api(id?`/employees/${id}`:'/employees',{method:id?'PUT':'POST',body:JSON.stringify(body)});
     if(await checkRes(res, 'Error saving employee!')){bootstrap.Modal.getInstance(document.getElementById('empModal')).hide();toast(id?'Updated!':'Employee created!');fetchData('employees',currentPage);}
+}
+
+async function deleteDoc(empId, docId, empName) {
+    if(!confirm('Are you sure you want to delete this document?')) return;
+    const res = await api(`/employees/${empId}/documents/${docId}`, { method: 'DELETE' });
+    if(await checkRes(res, 'Error deleting document!')) {
+        toast('Document deleted!');
+        // Refresh the profile modal by fetching the updated employee data if needed, or simply re-open it
+        // We can just fetch the employee from the current array since it's already in memory
+        const emp = [...dataCache.employees.items].find(e => e.id === empId) || {id: empId, first_name: empName};
+        viewProfile(emp); 
+    }
 }
 
 showDashboard();
