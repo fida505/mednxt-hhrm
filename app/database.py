@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from app.core.config import settings
 
@@ -32,3 +32,18 @@ def init_db():
     """Create all tables."""
     from app.models import department, designation, employee, audit, document  # noqa
     Base.metadata.create_all(bind=engine)
+
+    # Automatic schema upgrade for existing SQLite DBs on Railway
+    try:
+        with engine.connect() as conn:
+            # Check if file_size exists, if not, it will throw an exception
+            conn.execute(text("SELECT file_size FROM employee_documents LIMIT 1"))
+    except Exception:
+        # Column doesn't exist, alter the table
+        try:
+            with engine.connect() as conn:
+                conn.execute(text("ALTER TABLE employee_documents ADD COLUMN file_size BIGINT"))
+                conn.execute(text("ALTER TABLE employee_documents ADD COLUMN file_data BLOB"))
+                conn.commit()
+        except Exception as e:
+            print(f"Schema update error: {e}")
