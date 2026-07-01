@@ -1,5 +1,4 @@
-from sqlalchemy import Column, String, DateTime
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, String, DateTime, JSON
 from sqlalchemy.sql import func
 from app.database import Base
 from app.models.base import generate_uuid
@@ -16,7 +15,7 @@ class AuditLog(Base):
     
     changed_by = Column(String(100), nullable=True) # e.g., the User Role or ID if we had auth
     
-    # Store changes or full snapshot as JSON (using JSONB for Postgres)
-    details = Column(JSONB, nullable=True)
+    # Store changes or full snapshot as JSON
+    details = Column(JSON, nullable=True)
     
     timestamp = Column(DateTime(timezone=True), server_default=func.now())

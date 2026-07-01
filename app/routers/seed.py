@@ -90,10 +90,10 @@ def seed_demo_data(
     desig_ids = list(desig_map.values())
 
     for i, e in enumerate(EMPLOYEES):
-        import random as r
+        e_copy = dict(e)
+        e_copy["joining_date"] = date.fromisoformat(e["joining_date"])
         emp = Employee(
-            **e,
-            joining_date=date.fromisoformat(e["joining_date"]),
+            **e_copy,
             department_id=dept_ids[i % len(dept_ids)],
             designation_id=desig_ids[i % len(desig_ids)],
             tenant_id=tenant_id,
