@@ -107,9 +107,20 @@
 <!-- Navbar -->
 <nav class="navbar">
     <div class="container-fluid d-flex align-items-center justify-content-between">
-        <a class="brand" href="#"><i class="ph-fill ph-hospital" style="color:#818cf8;"></i>MedNXT <span class="brand-accent">HHRM</span><span class="badge-phase">Phase 1</span></a>
+        <a class="brand" href="#"><i class="ph-fill ph-hospital" style="color:#818cf8;"></i>MedNXT <span class="brand-accent">HHRM</span><span class="badge-phase">Phase 2</span></a>
         <div class="d-flex align-items-center gap-3">
             <div style="font-size:.85rem;color:var(--muted);" class="d-flex align-items-center gap-2"><i class="ph ph-buildings"></i>Default Hospital</div>
+            
+            <!-- RBAC Role Switcher -->
+            <div class="d-flex align-items-center gap-2" style="background:rgba(255,255,255,.05); border:1px solid var(--border); padding:4px 10px; border-radius:10px;">
+                <i class="ph ph-shield-check text-success"></i>
+                <select id="roleSwitcher" class="form-select form-select-sm" style="background:transparent; border:none; color:#fff; box-shadow:none; padding-left:0; font-size:.85rem; cursor:pointer;" onchange="updateRole(this.value)">
+                    <option value="ADMIN" style="background:#131728;">Role: ADMIN</option>
+                    <option value="HR" style="background:#131728;">Role: HR</option>
+                    <option value="VIEWER" style="background:#131728;">Role: VIEWER</option>
+                </select>
+            </div>
+
             <button class="btn btn-seed d-flex align-items-center gap-2" onclick="seedData()" style="font-size:.85rem; padding:7px 16px;">
                 <i class="ph ph-plant"></i> Load Demo Data
             </button>
@@ -204,7 +215,22 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const API='/api/v1', TID='00000000-0000-0000-0000-000000000001';
-const H={'X-Tenant-ID':TID,'Content-Type':'application/json'};
+let currentRole = localStorage.getItem('user_role') || 'ADMIN';
+
+// Set select element value after load
+window.addEventListener('DOMContentLoaded', () => {
+    const rs = document.getElementById('roleSwitcher');
+    if (rs) rs.value = currentRole;
+});
+
+function getHeaders() {
+    return {
+        'X-Tenant-ID': TID,
+        'Content-Type': 'application/json',
+        'X-User-Role': currentRole
+    };
+}
+
 let currentModule='dashboard', currentPage=1, searchTimer=null;
 let chartCat=null, chartDept=null;
 
@@ -215,7 +241,26 @@ function toast(msg,ok=true){
     new bootstrap.Toast(el,{delay:3000}).show();
 }
 
-async function api(path,opts={}){ return fetch(API+path,{headers:H,...opts}); }
+function updateRole(newRole) {
+    currentRole = newRole;
+    localStorage.setItem('user_role', newRole);
+    toast(`Switched role to: ${newRole}`);
+}
+
+async function api(path,opts={}){ return fetch(API+path,{headers:getHeaders(),...opts}); }
+
+async function checkRes(res, defaultMsg) {
+    if (res.ok) return true;
+    let detail = defaultMsg;
+    try {
+        const err = await res.json();
+        if (err && err.detail) {
+            detail = typeof err.detail === 'string' ? err.detail : JSON.stringify(err.detail);
+        }
+    } catch(e) {}
+    toast(detail, false);
+    return false;
+}
 
 // ── Seed Data ──
 async function seedData(){
@@ -370,8 +415,7 @@ async function exportCSV(mod){
 async function toggleStatus(mod,id,current){
     const newStatus=current==='ACTIVE'?'INACTIVE':'ACTIVE';
     const res=await api(`/${mod}/${id}`,{method:'PUT',body:JSON.stringify(current==='ACTIVE'?{status:'INACTIVE'}:{status:'ACTIVE',employment_status:'ACTIVE'})});
-    if(res.ok){ toast(`Status changed to ${newStatus}`); fetchData(mod,currentPage); }
-    else toast('Error updating status!',false);
+    if(await checkRes(res, 'Error updating status!')){ toast(`Status changed to ${newStatus}`); fetchData(mod,currentPage); }
 }
 
 function renderPagination(page,total,search){
@@ -480,18 +524,16 @@ async function uploadDoc(empId, input){
     formData.append('file', file);
     
     // Create new headers without Content-Type so browser sets boundary automatically
-    const fdHeaders = { 'X-Tenant-ID': TID };
-    const res = await fetch(API+\`/employees/\${empId}/documents\`, { method: 'POST', headers: fdHeaders, body: formData });
+    const fdHeaders = { 'X-Tenant-ID': TID, 'X-User-Role': currentRole };
+    const res = await fetch(API+`/employees/${empId}/documents`, { method: 'POST', headers: fdHeaders, body: formData });
     
-    if(res.ok) {
+    if(await checkRes(res, 'Failed to upload document!')) {
         toast('Document uploaded successfully!');
         // Refresh modal safely
         bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
-        const rRes = await api(\`/employees/\${empId}\`);
+        const rRes = await api(`/employees/${empId}`);
         const rData = await rRes.json();
         viewProfile(rData);
-    } else {
-        toast('Failed to upload document!', false);
     }
 }
 function pf(l,v){ return `<div class="col-md-4"><div class="profile-field"><div class="profile-field-label">${l}</div><div class="fw-medium">${v}</div></div></div>`; }
@@ -499,8 +541,7 @@ function pf(l,v){ return `<div class="col-md-4"><div class="profile-field"><div 
 async function delRecord(mod,id){
     if(!confirm('Delete this record?')) return;
     const res=await api(`/${mod}/${id}`,{method:'DELETE'});
-    if(res.ok){ toast('Deleted!'); fetchData(mod,currentPage); }
-    else toast('Error!',false);
+    if(await checkRes(res, 'Error deleting record!')){ toast('Deleted!'); fetchData(mod,currentPage); }
 }
 
 async function openAddModal(){
@@ -529,8 +570,7 @@ async function saveDept(){
     const body={name:document.getElementById('deptName').value,code:document.getElementById('deptCode').value||null,cost_center:document.getElementById('deptCostCenter').value||null,description:document.getElementById('deptDesc').value||null,status:document.getElementById('deptStatus').value};
     if(!body.name){toast('Name required!',false);return;}
     const res=await api(id?`/departments/${id}`:'/departments',{method:id?'PUT':'POST',body:JSON.stringify(body)});
-    if(res.ok){bootstrap.Modal.getInstance(document.getElementById('deptModal')).hide();toast(id?'Updated!':'Created!');fetchData('departments',currentPage);}
-    else toast('Error!',false);
+    if(await checkRes(res, 'Error saving department!')){bootstrap.Modal.getInstance(document.getElementById('deptModal')).hide();toast(id?'Updated!':'Created!');fetchData('departments',currentPage);}
 }
 
 function clearDesig(){ ['desigId','desigName','desigCode','desigDesc'].forEach(f=>document.getElementById(f).value=''); document.getElementById('desigGrade').value=''; document.getElementById('desigStatus').value='ACTIVE'; }
@@ -546,8 +586,7 @@ async function saveDesig(){
     const body={name:document.getElementById('desigName').value,code:document.getElementById('desigCode').value||null,grade:document.getElementById('desigGrade').value||null,description:document.getElementById('desigDesc').value||null,status:document.getElementById('desigStatus').value};
     if(!body.name){toast('Name required!',false);return;}
     const res=await api(id?`/designations/${id}`:'/designations',{method:id?'PUT':'POST',body:JSON.stringify(body)});
-    if(res.ok){bootstrap.Modal.getInstance(document.getElementById('desigModal')).hide();toast(id?'Updated!':'Created!');fetchData('designations',currentPage);}
-    else toast('Error!',false);
+    if(await checkRes(res, 'Error saving designation!')){bootstrap.Modal.getInstance(document.getElementById('desigModal')).hide();toast(id?'Updated!':'Created!');fetchData('designations',currentPage);}
 }
 
 function clearEmp(){ ['empId','empFirstName','empLastName','empEmail','empPhone','empDob','empJoining','empQual','empSpec','empExp'].forEach(f=>document.getElementById(f).value=''); ['empGender','empBlood','empCategory'].forEach(f=>document.getElementById(f).value=''); document.getElementById('empStatus').value='ACTIVE'; }
@@ -569,8 +608,7 @@ async function saveEmp(){
     const body={first_name:document.getElementById('empFirstName').value,last_name:document.getElementById('empLastName').value||null,email:document.getElementById('empEmail').value||null,phone:document.getElementById('empPhone').value||null,gender:document.getElementById('empGender').value||null,blood_group:document.getElementById('empBlood').value||null,date_of_birth:document.getElementById('empDob').value||null,department_id:document.getElementById('empDept').value||null,designation_id:document.getElementById('empDesig').value||null,category:document.getElementById('empCategory').value||null,joining_date:document.getElementById('empJoining').value||null,qualification:document.getElementById('empQual').value||null,specialty:document.getElementById('empSpec').value||null,experience_years:document.getElementById('empExp').value||null,employment_status:document.getElementById('empStatus').value};
     if(!body.first_name){toast('First name required!',false);return;}
     const res=await api(id?`/employees/${id}`:'/employees',{method:id?'PUT':'POST',body:JSON.stringify(body)});
-    if(res.ok){bootstrap.Modal.getInstance(document.getElementById('empModal')).hide();toast(id?'Updated!':'Employee created!');fetchData('employees',currentPage);}
-    else toast('Error!',false);
+    if(await checkRes(res, 'Error saving employee!')){bootstrap.Modal.getInstance(document.getElementById('empModal')).hide();toast(id?'Updated!':'Employee created!');fetchData('employees',currentPage);}
 }
 
 showDashboard();
